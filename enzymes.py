@@ -46,7 +46,7 @@ falcipain3.line = dataimport.det_dataframe_line(dfProt, falcipain3)
 falcipain3.abundance = dataimport.get_abundance(dfProt, falcipain3)
 falcipaine = [falcipain2, falcipain3]
 
-falcilysin = Enzyme('Falcilysin', 'PF13_0322', )
+falcilysin = Enzyme('Falcilysin', 'PF13_0322', 0.000317 , 0.0469)
 falcilysin.line = dataimport.det_dataframe_line(dfProt, falcilysin)
 falcilysin.abundance = dataimport.get_abundance(dfProt, falcilysin)
 
