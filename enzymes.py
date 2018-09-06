@@ -23,6 +23,7 @@ class MassActionEnzyme(object):
         self.abundance = []  # relative protein concentration in 2hpi resolution
 
 
+
 dfProt = pd.read_excel('proteome_plas.xlsx', sep='\t', header=1)  # dataframe for plasmepsin protein abundance
 plas1 = Enzyme('Plasmepsin I', 'PF14_0076', 0.01, 6, 20 * 10**(-6))
 # name, PFID (old), Km in mM, kCat in 1/s, maximum enzyme abundance in fmol
@@ -45,9 +46,16 @@ falcipaine = [falcipain2, falcipain3]
 hap = Enzyme('Histo Aspartic Protease', 'PF11_0161', 0.0034, 0.0016, 10 * 10**(-6))
 hap.line = dataimport.det_dataframe_line(dfProt, hap)
 hap.abundance = dataimport.get_abundance(dfProt, hap)
+
+falcilysin = Enzyme('Falcilysin', 'PF13_0322', 0.000317 , 0.0469)
+falcilysin.line = dataimport.det_dataframe_line(dfProt, falcilysin)
+falcilysin.abundance = dataimport.get_abundance(dfProt, falcilysin)
+
 dpap = Enzyme('Dipeptidyl aminopeptidase', 'PF11_0174', 1.4, 98, 10 * 10**(-6))
 aaap = Enzyme('Aminoacylproline aminopeptidase', 'PF14_0517', 0.97, 16, 10 * 10**(-6))
 alap = Enzyme('Alanyl aminopeptidase', 'MAL13P1.56', 0.322, 8.815, 10 * 10**(-6))
+aaap = Enzyme('Aminoacylproline aminopeptidase','PF14_0517', 0.97, 16, 10 * 10**(-6))
+alap.line = dataimport.det_dataframe_line(dfProt, alap)
 alap.abundance = dataimport.get_abundance(dfProt, alap)
 
 
