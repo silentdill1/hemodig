@@ -71,6 +71,7 @@ def derivative(n, t):
     dhzdt = (hdp.kCat_Km * hdpMEC * y[5]) * foodVacuoleVolume
     ds5dt = (falcipain3Kcat * falcipain3MEC * y[7]/(falcipain3Km+y[7])
              - hapKcat * hapMEC * hapAbund * y[8]/(hapKm+y[8])) * foodVacuoleVolume
+    print(hapKcat * hapMEC * hapAbund * y[8]/(hapKm+y[8]))
     ds6dt = (hapKcat * hapMEC * hapAbund * y[8]/(hapKm+y[8])) * foodVacuoleVolume
     return [dhbdt, ds0dt, ds1dt, ds2dt, ds3dt, dfppdt, dhzdt, ds4dt, ds5dt, ds6dt]
 

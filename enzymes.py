@@ -47,7 +47,7 @@ hap = Enzyme('Histo Aspartic Protease', 'PF11_0161', 0.0034, 0.0016, 10 * 10**(-
 hap.line = dataimport.det_dataframe_line(dfProt, hap)
 hap.abundance = dataimport.get_abundance(dfProt, hap)
 
-falcilysin = Enzyme('Falcilysin', 'PF13_0322', 0.000317 , 0.0469)
+falcilysin = Enzyme('Falcilysin', 'PF13_0322', 0.000317, 0.0469, 10 * 10**(-6))
 falcilysin.line = dataimport.det_dataframe_line(dfProt, falcilysin)
 falcilysin.abundance = dataimport.get_abundance(dfProt, falcilysin)
 

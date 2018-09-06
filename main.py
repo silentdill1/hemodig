@@ -20,7 +20,6 @@ for values in n:
     hzAbundance.append(values[6])
     s5Abundance.append(values[8])
     s6Abundance.append(values[9])
-print(len(s6Abundance))
 Abundances = [hbAbundance, fppAbundance, hzAbundance, s5Abundance, s6Abundance]
 AbundanceNames = ['hb', 'fpp', 'hz', 's5', 's6']
 fig = plt.figure()
