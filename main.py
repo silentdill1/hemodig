@@ -39,7 +39,7 @@ plot.set_ylabel("n [fmol]")
 plot.set_xlabel("t [h]")
 plot.legend()
 
-plot2 = fig.add_subplot(212)
+plot2 = fig.add_subplot(222)
 timegrid = np.linspace(0, 40, 100)
 vollist = []
 
