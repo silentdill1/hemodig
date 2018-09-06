@@ -59,7 +59,7 @@ plot.legend()
 plt.show()
 
 dpap = Enzyme('Dipeptidyl aminopeptidase', 'PF11_0174', 1.4, 98 )
-aaap = Enzyme('Aminoacylproline aminopeptidase','PF14_0517' ,0.97 , 16)
+aaap = Enzyme('Aminoacylproline aminopeptidase','PF14_0517', 0.97, 16 )
 alap = Enzyme('Alanyl amainopeptidase', 'MAL13P1.56', 0.322 , 8.815)
 alap.abundance = dataimport.get_abundance(dfProt, alap)
 
