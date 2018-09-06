@@ -15,6 +15,7 @@ s3Abundance = []
 fppAbundance = []
 hzAbundance = []
 s4Abundance = []
+s5Abundance = []
 
 for values in n:
     UCF_TO_FMOL = 0.001
@@ -26,10 +27,11 @@ for values in n:
     fppAbundance.append(values[5])
     hzAbundance.append(values[6])
     s4Abundance.append(values[7])
+    s5Abundance.append(values[8])
 
 Abundances = [hbAbundance, s0Abundance, s1Abundance, s2Abundance, s3Abundance,
-              fppAbundance, hzAbundance, s4Abundance]
-AbundanceNames = ['hb', 's0', 's1', 's2', 's3', 'fpp', 'hz', 's4']
+              fppAbundance, hzAbundance, s4Abundance, s5Abundance]
+AbundanceNames = ['hb', 's0', 's1', 's2', 's3', 'fpp', 'hz', 's4', 's5']
 fig = plt.figure()
 plot = fig.add_subplot(111)
 for i in range(0, len(Abundances)):

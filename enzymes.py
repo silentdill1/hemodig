@@ -1,6 +1,5 @@
 import pandas as pd
 import dataimport
-import matplotlib.pyplot as plt
 
 class Enzyme(object):
     def __init__(self, name, pfidold, km, kcat, maxenzymeabundance):
@@ -46,21 +45,10 @@ falcipain3 = Enzyme('Falcipain III', 'PF11_0161', 0.067, 0.022, 10 ** 10**(-6))
 falcipain3.line = dataimport.det_dataframe_line(dfProt, falcipain3)
 falcipain3.abundance = dataimport.get_abundance(dfProt, falcipain3)
 falcipaine = [falcipain2, falcipain3]
-fig = plt.figure()
-plot = fig.add_subplot(111)
-expr2 = []
-expr3 = []
-for i in range(0, 24):
-    expr2.append(falcipain2.abundance[i])
-    expr3.append(falcipain3.abundance[i])
-plot.plot(range(2, 50, 2), expr2, label='2')
-plot.plot(range(2, 50, 2), expr3, label='3')
-plot.legend()
-plt.show()
 
-dpap = Enzyme('Dipeptidyl aminopeptidase', 'PF11_0174', 1.4, 98 )
-aaap = Enzyme('Aminoacylproline aminopeptidase','PF14_0517' ,0.97 , 16)
-alap = Enzyme('Alanyl amainopeptidase', 'MAL13P1.56', 0.322 , 8.815)
+dpap = Enzyme('Dipeptidyl aminopeptidase', 'PF11_0174', 1.4, 98, 10 * 10**(-6))
+aaap = Enzyme('Aminoacylproline aminopeptidase','PF14_0517', 0.97, 16, 10 * 10**(-6))
+alap = Enzyme('Alanyl amainopeptidase', 'MAL13P1.56', 0.322, 8.815, 10 * 10**(-6))
 alap.abundance = dataimport.get_abundance(dfProt, alap)
 
 
