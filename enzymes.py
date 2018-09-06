@@ -1,6 +1,6 @@
 import pandas as pd
 import dataimport
-
+import matplotlib.pyplot as plt
 
 class Enzyme(object):
     def __init__(self, name, pfidold, km, kcat, maxenzymeabundance):
@@ -39,11 +39,24 @@ plas4.abundance = dataimport.get_abundance(dfProt, plas4)
 plasmepsine = [plas1, plas2, plas4]
 falcipain2 = MassActionEnzyme('Falcipain II', 'PF11_0165',  1511 * 10**3, 10 * 10**(-6))  # 45000 aus anderem datensatz
 # name, pfidold, kcat/km in 1/(h*M), maximum enzyme abundance in fmol
-
+falcipain2.line = dataimport.det_dataframe_line(dfProt, falcipain2)
+falcipain2.abundance = dataimport.get_abundance(dfProt, falcipain2)
 hdp = MassActionEnzyme("Heme Detoxification Protein", '', 4179 * 10**3, 10 * 10**(-6))
 falcipain3 = Enzyme('Falcipain III', 'PF11_0161', 0.067, 0.022, 10 ** 10**(-6))
 falcipain3.line = dataimport.det_dataframe_line(dfProt, falcipain3)
-
+falcipain3.abundance = dataimport.get_abundance(dfProt, falcipain3)
+falcipaine = [falcipain2, falcipain3]
+fig = plt.figure()
+plot = fig.add_subplot(111)
+expr2 = []
+expr3 = []
+for i in range(0, 24):
+    expr2.append(falcipain2.abundance[i])
+    expr3.append(falcipain3.abundance[i])
+plot.plot(range(2, 50, 2), expr2, label='2')
+plot.plot(range(2, 50, 2), expr3, label='3')
+plot.legend()
+plt.show()
 
 
 
