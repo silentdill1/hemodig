@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
+import numpy as np
 from scipy.integrate import odeint
-
+from foodvacuole import get_volume
 import odesystem
 from expdataimport import expValues
 
@@ -37,4 +38,13 @@ plot.plot(expValues[0], expValues[1], label="exp hz values")
 plot.set_ylabel("n [fmol]")
 plot.set_xlabel("t [h]")
 plot.legend()
+
+plot2 = fig.add_subplot(222)
+timegrid = np.linspace(0, 40, 100)
+vollist = []
+
+for time in timegrid:
+    vollist.append(get_volume(time))
+
+plot2.plot(timegrid, vollist)
 plt.show()
