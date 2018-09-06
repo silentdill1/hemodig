@@ -54,8 +54,8 @@ def derivative(n, t):
     ds3dt = (plas4Kcat * get_occupancy_ratio(t) * plas4MEC * plas4abund * y[3]/(plas4Km+y[3])
              - falcipain2.kCat_Km * falcipain2EC * y[4]) * foodVacuoleVolume
     ds4dt = falcipain2.kCat_Km * falcipain2EC * y[4] * foodVacuoleVolume
-    dfppdt = 4 * (falcipain2.kCat_Km * falcipain2EC * y[4] - hdp.kCat_Km * hdpEC * y[5]) * foodVacuoleVolume
-    dhzdt = 0.5 * (hdp.kCat_Km * hdpEC * y[5] * foodVacuoleVolume)
+    dfppdt = (4 * falcipain2.kCat_Km * falcipain2EC * y[4] - 2 * hdp.kCat_Km * hdpEC * y[5]) * foodVacuoleVolume
+    dhzdt = (hdp.kCat_Km * hdpEC * y[5] * foodVacuoleVolume)
     return [dhbdt, ds0dt, ds1dt, ds2dt, ds3dt, dfppdt, dhzdt, ds4dt]
 
 
