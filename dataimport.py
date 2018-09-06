@@ -1,7 +1,7 @@
 # uses pandas dataframe object
 
 
-def plas_det_dataframe_line(dataframe, enzyme):
+def det_dataframe_line(dataframe, enzyme):
     line = 0
     for i in range(dataframe.shape[0]):
         if dataframe.at[i, 'PlasmoDB ID \nor NCBI \nAccession \nNumber'] == enzyme.pfidOld:
@@ -9,7 +9,7 @@ def plas_det_dataframe_line(dataframe, enzyme):
     return line
 
 
-def plas_get_abundance(dataframe, enzyme):
+def get_abundance(dataframe, enzyme):
 
     values = []
     values_non_log = []         # reversed log2 transformed values
