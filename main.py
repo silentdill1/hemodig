@@ -31,7 +31,7 @@ Abundances = [hbAbundance, s0Abundance, s1Abundance, s2Abundance, s3Abundance,
               fppAbundance, hzAbundance, s4Abundance]
 AbundanceNames = ['hb', 's0', 's1', 's2', 's3', 'fpp', 'hz', 's4']
 fig = plt.figure()
-plot = fig.add_subplot(111)
+plot = fig.add_subplot(221)
 for i in range(0, len(Abundances)-1):
     plot.plot(odesystem.timeGrid, Abundances[i], label=AbundanceNames[i])
 plot.plot(expValues[0], expValues[1], label="exp hz values")
