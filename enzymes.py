@@ -36,5 +36,5 @@ plasmepsine = [plas1, plas2, plas4]
 falcipain2 = MassActionEnzyme('Falcipain II', 1511 * 10**3, 10 * 10**(-6))
 # name, kcat/km in 1/(h*M), maximum enzyme abundance in fmol
 hdp = MassActionEnzyme("Heme Detoxification Protein", 4179 * 10**3, 10 * 10**(-6))
-
+dpa1 = Enzyme('Dipeptidyl aminnopeptidase', 'PF11_0174', 1.3, 94)
 
