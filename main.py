@@ -8,30 +8,21 @@ from expdataimport import expValues
 n = odeint(odesystem.derivative, odesystem.initialAbundances, odesystem.timeGrid)
 
 hbAbundance = []
-s0Abundance = []
-s1Abundance = []
-s2Abundance = []
-s3Abundance = []
 fppAbundance = []
 hzAbundance = []
-s4Abundance = []
 s5Abundance = []
+s6Abundance = []
 
 for values in n:
     UCF_TO_FMOL = 0.001
     hbAbundance.append(values[0])
-    s0Abundance.append(values[1])
-    s1Abundance.append(values[2])
-    s2Abundance.append(values[3])
-    s3Abundance.append(values[4])
     fppAbundance.append(values[5])
     hzAbundance.append(values[6])
-    s4Abundance.append(values[7])
     s5Abundance.append(values[8])
-
-Abundances = [hbAbundance, s0Abundance, s1Abundance, s2Abundance, s3Abundance,
-              fppAbundance, hzAbundance, s4Abundance, s5Abundance]
-AbundanceNames = ['hb', 's0', 's1', 's2', 's3', 'fpp', 'hz', 's4', 's5']
+    s6Abundance.append(values[9])
+print(len(s6Abundance))
+Abundances = [hbAbundance, fppAbundance, hzAbundance, s5Abundance, s6Abundance]
+AbundanceNames = ['hb', 'fpp', 'hz', 's5', 's6']
 fig = plt.figure()
 plot = fig.add_subplot(111)
 for i in range(0, len(Abundances)):

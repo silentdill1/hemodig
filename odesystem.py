@@ -5,12 +5,13 @@ from enzymes import plasmepsine
 from enzymes import falcipain2
 from enzymes import hdp
 from enzymes import falcipaine
+from enzymes import hap
 
 import numpy as np
 
 UCF_PER_S_TO_PER_H = 3600  # unit conversion from 1/s to 1/h
 UCF_MM_TO_M = 0.001  # unit conversion from M to mM
-initialAbundances = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+initialAbundances = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 timeGrid = np.linspace(2, 47, 101)
 
 
@@ -47,7 +48,11 @@ def derivative(n, t):
     falcipain3Kcat = falcipaine[1].kCat * UCF_PER_S_TO_PER_H
     falcipain3Km = falcipaine[1].km * UCF_MM_TO_M
     falcipain3MEC = falcipaine[1].MAX_ENZYME_ABUNDANCE / foodVacuoleVolume
-    falcipain3abund = falcipaine[1].abundance[eci]
+
+    hapKcat = hap.kCat * UCF_PER_S_TO_PER_H
+    hapKm = hap.km * UCF_MM_TO_M
+    hapMEC = hap.MAX_ENZYME_ABUNDANCE / foodVacuoleVolume
+    hapAbund = hap.abundance[eci]
 
     # abundance changes in fmol/h
     dhbdt = (get_hb_abundance_change(t)/foodVacuoleVolume * UCF_MM_TO_M
@@ -61,11 +66,13 @@ def derivative(n, t):
     ds3dt = (plas4Kcat * get_occupancy_ratio(t) * plas4MEC * plas4abund * y[3]/(plas4Km+y[3])
              - falcipain2abund * falcipain2.kCat_Km * falcipain2MEC * y[4]) * foodVacuoleVolume
     ds4dt = (falcipain2abund * falcipain2.kCat_Km * falcipain2MEC * y[4]
-             - falcipain3Kcat * falcipain3MEC * falcipain3abund * y[7]/(falcipain3Km+y[7])) * foodVacuoleVolume
+             - falcipain3Kcat * falcipain3MEC * y[7]/(falcipain3Km+y[7])) * foodVacuoleVolume
     dfppdt = (4 * falcipain2abund * falcipain2.kCat_Km * falcipain2MEC * y[4] - 2 * hdp.kCat_Km * hdpMEC * y[5]) * foodVacuoleVolume
     dhzdt = (hdp.kCat_Km * hdpMEC * y[5]) * foodVacuoleVolume
-    ds5dt = (falcipain3Kcat * falcipain3MEC * falcipain3abund * y[7]/(falcipain3Km+y[7])) * foodVacuoleVolume
-    return [dhbdt, ds0dt, ds1dt, ds2dt, ds3dt, dfppdt, dhzdt, ds4dt, ds5dt]
+    ds5dt = (falcipain3Kcat * falcipain3MEC * y[7]/(falcipain3Km+y[7])
+             - hapKcat * hapMEC * hapAbund * y[8]/(hapKm+y[8])) * foodVacuoleVolume
+    ds6dt = (hapKcat * hapMEC * hapAbund * y[8]/(hapKm+y[8])) * foodVacuoleVolume
+    return [dhbdt, ds0dt, ds1dt, ds2dt, ds3dt, dfppdt, dhzdt, ds4dt, ds5dt, ds6dt]
 
 
 def det_enzyme_concentration_index(t):
