@@ -1,6 +1,6 @@
 import pandas as pd
 import dataimport
-
+import matplotlib.pyplot as plt
 
 class Enzyme(object):
     def __init__(self, name, pfidold, km, kcat, maxenzymeabundance):
@@ -44,6 +44,7 @@ falcipain2.abundance = dataimport.get_abundance(dfProt, falcipain2)
 hdp = MassActionEnzyme("Heme Detoxification Protein", '', 4179 * 10**3, 10 * 10**(-6))
 falcipain3 = Enzyme('Falcipain III', 'PF11_0161', 0.067, 0.022, 10 ** 10**(-6))
 falcipain3.line = dataimport.det_dataframe_line(dfProt, falcipain3)
+falcipain3.abundance = dataimport.get_abundance(dfProt, falcipain3)
 falcipaine = [falcipain2, falcipain3]
 fig = plt.figure()
 plot = fig.add_subplot(111)
@@ -56,8 +57,8 @@ plot.plot(range(2, 50, 2), expr2, label='2')
 plot.plot(range(2, 50, 2), expr3, label='3')
 plot.legend()
 plt.show()
-dpap = Enzyme('Dipeptidyl aminopeptidase', 'PF11_0174', )
-aaap = Enzyme('Aminoacylproline aminopeptidase','PF14_0517' ,0.97 , 16)
+# dpap = Enzyme('Dipeptidyl aminopeptidase', 'PF11_0174', )
+# aaap = Enzyme('Aminoacylproline aminopeptidase', 'PF14_0517', 0.97, 16)
 
 
 
