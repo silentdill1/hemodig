@@ -40,11 +40,15 @@ falcipain2 = MassActionEnzyme('Falcipain II', 'PF11_0165',  1511 * 10**3, 10 * 1
 # name, pfidold, kcat/km in 1/(h*M), maximum enzyme abundance in fmol
 falcipain2.line = dataimport.det_dataframe_line(dfProt, falcipain2)
 falcipain2.abundance = dataimport.get_abundance(dfProt, falcipain2)
-hdp = MassActionEnzyme("Heme Detoxification Protein", '', 4179 * 10**3, 10 * 10**(-6))
+hdp = MassActionEnzyme("Heme Detoxification Protein", 'PF14_0446', 4179 * 10**3, 10 * 10**(-6))
 falcipain3 = Enzyme('Falcipain III', 'PF11_0161', 0.067, 0.022, 10 ** 10**(-6))
 falcipain3.line = dataimport.det_dataframe_line(dfProt, falcipain3)
 falcipain3.abundance = dataimport.get_abundance(dfProt, falcipain3)
 falcipaine = [falcipain2, falcipain3]
+
+falcilysin = Enzyme('Falcilysin', 'PF13_0322', )
+falcilysin.line = dataimport.det_dataframe_line(dfProt, falcilysin)
+falcilysin.abundance = dataimport.get_abundance(dfProt, falcilysin)
 
 dpap = Enzyme('Dipeptidyl aminopeptidase', 'PF11_0174', 1.4, 98, 10 * 10**(-6))
 aaap = Enzyme('Aminoacylproline aminopeptidase','PF14_0517', 0.97, 16, 10 * 10**(-6))
