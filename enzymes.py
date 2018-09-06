@@ -50,6 +50,7 @@ dpap = Enzyme('Dipeptidyl aminopeptidase', 'PF11_0174', 1.4, 98, 10 * 10**(-6))
 aaap = Enzyme('Aminoacylproline aminopeptidase','PF14_0517', 0.97, 16, 10 * 10**(-6))
 
 alap = Enzyme('Alanyl amainopeptidase', 'MAL13P1.56', 0.322 , 8.815)
+alap.line = dataimport.det_dataframe_line(dfProt, alap)
 alap.abundance = dataimport.get_abundance(dfProt, alap)
 
 
