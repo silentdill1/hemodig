@@ -44,6 +44,8 @@ hdp = MassActionEnzyme("Heme Detoxification Protein", '', 4179 * 10**3, 10 * 10*
 falcipain3 = Enzyme('Falcipain III', 'PF11_0161', 0.067, 0.022, 10 ** 10**(-6))
 falcipain3.line = dataimport.det_dataframe_line(dfProt, falcipain3)
 
+dpap = Enzyme('Dipeptidyl aminopeptidase', 'PF11_0174', )
+aaap = Enzyme('Aminoacylproline aminopeptidase','PF14_0517' ,0.97 , 16)
 
 
 
