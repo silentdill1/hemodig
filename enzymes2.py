@@ -1,6 +1,6 @@
 import pandas as pd
 import dataimport
-
+import
 
 class Enzyme(object):
     def __init__(self, name, pfidold, kcatkm, maxenzymeabundance, maxsize, minsize, stepsize, endbased):
@@ -41,4 +41,4 @@ LAMAp = Enzyme('Leucyl, Aspartyl, Methionyl Aminopeptidasen', '', 1.5 * 10**3, 2
 AapAAp = Enzyme('Aminoacyl Prolin, Alanyl Aminopeptidasen', '', 22 * 10**3, 20, 2, 1, True)
 PPAp = Enzyme('Prolyl Aminopetidase, Aminopeptidase P', '', 109 * 10**3, 20, 2, 1, True)
 subt = Enzyme('Subtilisin', '', 440 * 10**3, 20, 2, 1, True)
-
+enzymes = [iPep, lpPep, fln, dpAp, LAMAp, AapAAp, PPAp, subt]

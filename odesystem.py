@@ -10,7 +10,7 @@ from enzymes import hap
 import numpy as np
 
 UCF_PER_S_TO_PER_H = 3600  # unit conversion from 1/s to 1/h
-UCF_MM_TO_M = 0.001  # unit conversion from M to mM
+UCF_MM_TO_M = 0.001  # unit conversion from mM to M
 initialAbundances = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 timeGrid = np.linspace(2, 47, 101)
 
