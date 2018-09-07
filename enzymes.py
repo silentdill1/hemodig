@@ -1,5 +1,6 @@
 import pandas as pd
 import dataimport
+import matplotlib.pyplot as plt
 
 class Enzyme(object):
     def __init__(self, name, pfidold, km, kcat, maxenzymeabundance):
@@ -24,7 +25,7 @@ class MassActionEnzyme(object):
 
 
 
-dfProt = pd.read_excel('proteome_plas.xlsx', sep='\t', header=1)  # dataframe for plasmepsin protein abundance
+dfProt = pd.read_excel('proteome_plas.xlsx', sep='\t', header=1)  # dataframe for protein abundance
 plas1 = Enzyme('Plasmepsin I', 'PF14_0076', 0.01, 6, 20 * 10**(-6))
 # name, PFID (old), Km in mM, kCat in 1/s, maximum enzyme abundance in fmol
 plas1.line = dataimport.det_dataframe_line(dfProt, plas1)     # 2 lines in dataframe only first is used
@@ -57,5 +58,11 @@ alap = Enzyme('Alanyl aminopeptidase', 'MAL13P1.56', 0.322, 8.815, 10 * 10**(-6)
 alap.line = dataimport.det_dataframe_line(dfProt, alap)
 alap.abundance = dataimport.get_abundance(dfProt, alap)
 
+fig = plt.figure()
+plot = fig.add_subplot(111)
+plot.plot(range(2,50,2), hap.abundance, label='hap')
+plot.plot(range(2,50,2), falcilysin.abundance, label='fln')
+plot.legend()
+plt.show()
 
 
