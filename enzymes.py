@@ -60,8 +60,8 @@ alap.abundance = dataimport.get_abundance(dfProt, alap)
 
 fig = plt.figure()
 plot = fig.add_subplot(111)
-plot.plot(range(2,50,2), hap.abundance, label='hap')
-plot.plot(range(2,50,2), falcilysin.abundance, label='fln')
+plot.plot(range(2, 50, 2), hap.abundance, label='hap')
+plot.plot(range(2, 50, 2), falcilysin.abundance, label='fln')
 plot.legend()
 plt.show()
 
