@@ -13,9 +13,9 @@ def get_hb_concentration(t):  # returns host cell hb concentration in mM
              6.33731 * 10 ** -7, -1.38266 * 10 ** -8, 1.88175 * 10 ** -10, -1.4294 * 10 ** -12, 4.27014 * 10 ** -15,
              4.12342 * 10 ** -18]
         # polynomial coefficients
-        hbconcentration = 0
+        hb_concentration = 0
         for i in range(0, len(a)):
-            hbconcentration += a[i]*t**i
+            hb_concentration += a[i]*t**i
     else:
-        hbconcentration = 3.6
-    return hbconcentration
+        hb_concentration = 3.6
+    return hb_concentration

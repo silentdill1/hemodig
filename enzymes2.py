@@ -2,20 +2,21 @@ import pandas as pd
 import dataimport
 import datainterpretation
 
+
 class Enzyme(object):
-    def __init__(self, name, type, pfidold, kcatkm, maxenzymeabundance, maxsize, minsize, stepsize, endbased):
+    def __init__(self, name, category, pf_id_old, k_cat_k_m, max_enzyme_abundance, max_size, min_size, step_size, end_based):
 
             self.name = name
-            self.type = type  # see types list
-            self.pfidOld = pfidold  # pfid of reference enzyme used for abundance
-            self.kCatKm = kcatkm  # in 1/(M*s)
+            self.category = category  # see types list
+            self.pf_id_old = pf_id_old  # pfid of reference enzyme used for abundance
+            self.kCatKm = k_cat_k_m  # in 1/(M*s)
             self.line = 0  # line in proteome table
             self.abundance = []  # relative protein concentration in 2hpi resolution
-            self.MAX_ENZYME_ABUNDANCE = maxenzymeabundance  # in fmol
-            self.maxSize = maxsize  # maximum protein length for cleavage
-            self.minSize = minsize  # minimum protein length for cleavage
-            self.stepSize = stepsize  # interval for cleavage sites
-            self.endBased = endbased  # works only on the n terminus of the protein
+            self.MAX_ENZYME_ABUNDANCE = max_enzyme_abundance  # in fmol
+            self.maxSize = max_size  # maximum protein length for cleavage
+            self.minSize = min_size  # minimum protein length for cleavage
+            self.stepSize = step_size  # interval for cleavage sites
+            self.endBased = end_based  # works only on the n terminus of the protein
             self.indices = datainterpretation.get_index_list(self)
             # list with start and end index for species wFpp followed by woFpp for ode solver
 

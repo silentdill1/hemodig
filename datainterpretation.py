@@ -13,20 +13,22 @@ for i in range(22, 72, 2):
     currentIndex += 1
 print(names)
 
+
 def get_index_list(enzyme):
-    if type is 0:  # initial peptide peptidases
-        wFppIndices = [names[str(enzyme.minSize)+'wFpp'], names[str(enzyme.maxSize)+'wFpp']]
-        woFppIndices = 'None'
+    category = enzyme.category
+    if category is 0:  # initial peptide peptidases
+        w_fpp_indices = [names[str(enzyme.minSize)+'wFpp'], names[str(enzyme.maxSize)+'wFpp']]
+        wo_fpp_indices = 'None'
 
-    elif type is 1:  # long peptide peptidases
-        wFppIndices = [names[str(enzyme.minSize)+'wFpp'], names[str(enzyme.maxSize)+'wFpp']]
-        woFppIndices = [names[str(enzyme.minSize)], names['70']]
+    elif category is 1:  # long peptide peptidases
+        w_fpp_indices = [names[str(enzyme.minSize)+'wFpp'], names[str(enzyme.maxSize)+'wFpp']]
+        wo_fpp_indices = [names[str(enzyme.minSize)], names['70']]
 
-    elif (type is 2) or (type is 3):  # dipeptidyl aminopeptidase
-        wFppIndices = 'None'
-        woFppIndices = [names[str(enzyme.minSize)], names[str(enzyme.maxSize)]]
+    elif (category is 2) or (category is 3):  # dipeptidyl aminopeptidase
+        w_fpp_indices = 'None'
+        wo_fpp_indices = [names[str(enzyme.minSize)], names[str(enzyme.maxSize)]]
 
     else:
-        sys.exit('No valid enzyme type')
+        sys.exit('No valid enzyme category')
 
-    return [wFppIndices, woFppIndices]
+    return [w_fpp_indices, wo_fpp_indices]
