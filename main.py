@@ -8,15 +8,43 @@ n = odeint(odesystem2.derivative, odesystem2.initialAbundances, odesystem2.timeG
 
 hbAbundance = []
 hzAbundance = []
-asAbundance = []
+ipAbundance = []  # wFpp
+pwFppAbundance = []  # peptides with fpp
+lpAbundance = []
+spAbundance = []
+dpAbundance = []
+# asAbundance = []
 
+currentIndex = 0
 for values in n:
     hbAbundance.append(values[names['Hb']])
     hzAbundance.append(values[names['Hz']])
-    asAbundance.append(values[names['1']]/100)
 
-Abundances = [hbAbundance, hzAbundance, asAbundance]
-AbundanceNames = ['hb', 'hz', 'as']
+    ipAbundance.append(0)
+    for i in range(names['80wFpp'], names['146wFpp']+1):
+        ipAbundance[currentIndex] += values[i]
+
+    pwFppAbundance.append(ipAbundance[currentIndex])
+    for i in range(names['10wFpp'], names['80wFpp']+1):
+        pwFppAbundance[currentIndex] += values[i]
+
+    lpAbundance.append(0)
+    for i in range(names['20wFpp'], names['80wFpp']+1):
+        lpAbundance[currentIndex] += values[i]
+    for i in range(names['20'], names['70']):
+        lpAbundance[currentIndex] += values[i]
+
+    spAbundance.append(0)
+    for i in range(names['4'], names['20']+1):
+        lpAbundance[currentIndex] += values[i]
+
+    dpAbundance.append(values[names['2']])
+    # asAbundance.append(values[names['1']])
+    currentIndex += 1
+
+Abundances = [hbAbundance, hzAbundance, ipAbundance, pwFppAbundance, lpAbundance,
+              spAbundance, dpAbundance]
+AbundanceNames = ['hb', 'hz', 'ip', 'wfpp', 'lp', 'sp', 'dp']
 fig = plt.figure()
 plot = fig.add_subplot(111)
 for i in range(0, len(Abundances)):
@@ -36,3 +64,4 @@ for time in timegrid:
 plot2.plot(timegrid, vollist)
 '''
 plt.show()
+fig.savefig('plot_intermediates')
