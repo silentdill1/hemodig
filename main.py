@@ -1,31 +1,26 @@
 import matplotlib.pyplot as plt
-import numpy as np
 from scipy.integrate import odeint
-from foodvacuole import get_volume
-import odesystem
+import odesystem2
 from expdataimport import expValues
+from datainterpretation import names
 
-n = odeint(odesystem.derivative, odesystem.initialAbundances, odesystem.timeGrid)
+n = odeint(odesystem2.derivative, odesystem2.initialAbundances, odesystem2.timeGrid)
 
 hbAbundance = []
-fppAbundance = []
 hzAbundance = []
-s5Abundance = []
-s6Abundance = []
+asAbundance = []
 
 for values in n:
-    UCF_TO_FMOL = 0.001
-    hbAbundance.append(values[0])
-    fppAbundance.append(values[5])
-    hzAbundance.append(values[6])
-    s5Abundance.append(values[8])
-    s6Abundance.append(values[9])
-Abundances = [hbAbundance, fppAbundance, hzAbundance, s5Abundance, s6Abundance]
-AbundanceNames = ['hb', 'fpp', 'hz', 's5', 's6']
+    hbAbundance.append(values[names['Hb']])
+    hzAbundance.append(values[names['Hz']])
+    asAbundance.append(values[names['1']]/100)
+
+Abundances = [hbAbundance, hzAbundance, asAbundance]
+AbundanceNames = ['hb', 'hz', 'as']
 fig = plt.figure()
 plot = fig.add_subplot(111)
 for i in range(0, len(Abundances)):
-    plot.plot(odesystem.timeGrid, Abundances[i], label=AbundanceNames[i])
+    plot.plot(odesystem2.timeGrid, Abundances[i], label=AbundanceNames[i])
 plot.plot(expValues[0], expValues[1], label="exp hz values")
 plot.set_ylabel("n [fmol]")
 plot.set_xlabel("t [h]")
