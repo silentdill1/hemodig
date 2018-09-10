@@ -69,21 +69,20 @@ def derivative(abundances, t):
     eci = get_relative_enzyme_concentration_index(t)
 
 # hb uptake
-    abundance_changes[0] = get_hb_abundance_change(t)
+    abundance_changes[names['Hb']] = get_hb_abundance_change(t)
 
 # plasmepsin I equations
-    abundance_changes[0] = -plas1.kCatKm * plas1.abundance[eci] * concentrations[0] * food_vacuole_volume # hb
+    abundance_changes[names['Hb']] = -plas1.kCatKm * plas1.abundance[eci] * concentrations[0] * food_vacuole_volume
     abundance_changes[names['146wFpp']] = 2 * plas1.kCatKm * plas1.abundance[eci] * concentrations[0] * food_vacuole_volume
     # abundance change of peptide chain with length of 146 AS containing fpp
     abundance_changes[names['108wFpp']] = 2 * plas1.kCatKm * plas1.abundance[eci] * concentrations[0] * food_vacuole_volume
     abundance_changes[names['33']] = 2 * plas1.kCatKm * plas1.abundance[eci] * concentrations[0] * food_vacuole_volume
 
-# falcipain II equations
-
-
 # heme detoxification protein equations
-    abundance_changes[1] = -hdp.kCatKm * hdp.abundance[eci] * concentrations[1] * food_vacuole_volume # fpp degradation
-    abundance_changes[2] = hdp.kCatKm * hdp.abundance[eci] * concentrations[1] * food_vacuole_volume # hz production
+    abundance_changes[names['Fpp']] = -hdp.kCatKm * hdp.abundance[eci] * concentrations[1] * food_vacuole_volume
+    # fpp degradation
+    abundance_changes[names['Hz']] = hdp.kCatKm * hdp.abundance[eci] * concentrations[1] * food_vacuole_volume
+    # hz production
 
 # other enzymes
     for enzyme in enzymes:
@@ -91,15 +90,18 @@ def derivative(abundances, t):
         if enzyme.indices[0] != 'None':  # operates on sequences with fpp
             start_index = enzyme.indices[0][0]
             end_index = enzyme.indices[0][1]
+            max_enzyme_abundance = enzyme.MAX_ENZYME_ABUNDANCE
+            k_cat_k_m = enzyme.kCatKm
             for i in range(start_index, end_index+1):
                 if concentrations[i] != 0:  # check if substrate has concentration
-                    max_enzyme_abundance = enzyme.MAX_ENZYME_ABUNDANCE
-                    k_cat_k_m = enzyme.kCatKm
                     p = get_available_enzyme_concentration(concentrations[i],
                                                            absolute_concentration_of_possible_substrates)
                     # TODO: get abundance data according to eci if possible
                     abundance_changes[i] = -p * max_enzyme_abundance * k_cat_k_m * concentrations[i]
                     # decay of substrate
+                    if enzyme is fal2:
+                        abundance_changes[1] = p * max_enzyme_abundance * k_cat_k_m * concentrations[i]
+                        # falcipain II releases fpp from substrate
                     length_of_substrate = lengths[i]
                     n = get_number_of_cuts(enzyme, length_of_substrate)
                     length_of_fragment1 = length_of_substrate

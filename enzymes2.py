@@ -49,4 +49,4 @@ LAMAp = Enzyme('Leucyl, Aspartyl, Methionyl Aminopeptidasen', 3, '', 1.5 * 10**3
 AapAAp = Enzyme('Aminoacyl Prolin, Alanyl Aminopeptidasen', 3, '', 22 * 10**3, 50 * 10**(-6), 20, 2, 1, True)
 PPAp = Enzyme('Prolyl Aminopetidase, Aminopeptidase P', 3, '', 109 * 10**3, 50 * 10**(-6), 20, 2, 1, True)
 subt = Enzyme('Subtilisin', 3, '', 440 * 10**3, 50 * 10**(-6), 20, 2, 1, True)
-enzymes = [iPep, lpPep, fln, dpAp, LAMAp, AapAAp, PPAp, subt]
+enzymes = [iPep, fal2, lpPep, fln, dpAp, LAMAp, AapAAp, PPAp, subt]
