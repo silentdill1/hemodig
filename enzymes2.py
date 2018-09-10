@@ -26,11 +26,11 @@ types = ['Initial peptidase', 'Long peptide peptidase', 'Dipeptidyl aminopeptida
 # -1 is for other types that should not be processed by a function requiring types
 plas1Concentration = 30 * 10**(-6)
 iPepConcentration = 30 * 10**(-6)
-fal2Concentration = 30 * 10**(-6)
+fal2Concentration = 50 * 10**(-6)
 hdpConcentration = 50 * 10**(-6)
-lpPepConcentration = 30 * 10**(-6)
-dpapConcentration = 30 * 10**(-6)
-apConcentration = 50 * 10**(-6)
+lpPepConcentration = 50 * 10**(-6)
+dpapConcentration = 50 * 10**(-6)
+apConcentration = 80 * 10**(-6)
 
 
 dfProt = pd.read_excel('proteome_plas.xlsx', sep='\t', header=1)  # dataframe for protein abundance

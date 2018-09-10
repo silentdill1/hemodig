@@ -107,19 +107,28 @@ def derivative(abundances, t):
                     n = get_number_of_cuts(enzyme, length_of_substrate)
                     length_of_fragment1 = length_of_substrate
                     # length of one of the products of current cut
-                    while (length_of_fragment1 - enzyme.stepSize) > 0:
-                        length_of_fragment1 -= enzyme.stepSize
-                        length_of_fragment2 = length_of_substrate - length_of_fragment1
-                        if length_of_fragment1 >= length_of_fragment2:
-                            # longer fragment maintains fpp
-                            index_of_fragment1 = names[str(length_of_fragment1)+'wFpp']
-                            index_of_fragment2 = names[str(length_of_fragment2)]
-                        else:
+                    if enzyme is fal2:  # the fpp is no longer part of any peptide, both are added to non fpp array
+                        while (length_of_fragment1 - enzyme.stepSize) > 0:
+                            length_of_fragment1 -= enzyme.stepSize
+                            length_of_fragment2 = length_of_substrate - length_of_fragment1
                             index_of_fragment1 = names[str(length_of_fragment1)]
-                            index_of_fragment2 = names[str(length_of_fragment2)+'wFpp']
-                        abundance_change_of_fragments = p / n * max_enzyme_abundance * k_cat_k_m * concentrations[i]
-                        abundance_changes[index_of_fragment1] += abundance_change_of_fragments
-                        abundance_changes[index_of_fragment2] += abundance_change_of_fragments
+                            index_of_fragment2 = names[str(length_of_fragment2)]
+                            abundance_change_of_fragments = p / n * max_enzyme_abundance * k_cat_k_m * concentrations[i]
+                            abundance_changes[index_of_fragment1] += abundance_change_of_fragments
+                            abundance_changes[index_of_fragment2] += abundance_change_of_fragments
+                    else:
+                        while (length_of_fragment1 - enzyme.stepSize) > 0:  # longer fragment maintains fpp (if-part)
+                            length_of_fragment1 -= enzyme.stepSize
+                            length_of_fragment2 = length_of_substrate - length_of_fragment1
+                            if length_of_fragment1 >= length_of_fragment2:
+                                index_of_fragment1 = names[str(length_of_fragment1)+'wFpp']
+                                index_of_fragment2 = names[str(length_of_fragment2)]
+                            else:
+                                index_of_fragment1 = names[str(length_of_fragment1)]
+                                index_of_fragment2 = names[str(length_of_fragment2)+'wFpp']
+                            abundance_change_of_fragments = p / n * max_enzyme_abundance * k_cat_k_m * concentrations[i]
+                            abundance_changes[index_of_fragment1] += abundance_change_of_fragments
+                            abundance_changes[index_of_fragment2] += abundance_change_of_fragments
         if enzyme.indices[1] != 'None':  # operates on sequences without fpp
             start_index = enzyme.indices[1][0]
             end_index = enzyme.indices[1][1]
@@ -133,7 +142,10 @@ def derivative(abundances, t):
                     abundance_changes[i] += -p * max_enzyme_abundance * k_cat_k_m * concentrations[i]
                     # decay of substrate
                     length_of_substrate = lengths[i]
-                    n = get_number_of_cuts(enzyme, length_of_substrate)
+                    if enzyme.endBased:
+                        n = 1  # end based enzymes cut only once at N terminus of protein
+                    else:
+                        n = get_number_of_cuts(enzyme, length_of_substrate)
                     length_of_fragment1 = length_of_substrate
                     # length of one of the products of current cut
                     while (length_of_fragment1 - enzyme.stepSize) > 0:
@@ -144,6 +156,8 @@ def derivative(abundances, t):
                         abundance_change_of_fragments = p / n * max_enzyme_abundance * k_cat_k_m * concentrations[i]
                         abundance_changes[index_of_fragment1] += abundance_change_of_fragments
                         abundance_changes[index_of_fragment2] += abundance_change_of_fragments
+                        if enzyme.endBased:
+                            break  # simulates only one cut for end based enzymes
 
     return abundance_changes
 

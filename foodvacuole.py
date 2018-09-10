@@ -3,7 +3,7 @@ from hostcell import get_hb_concentration
 
 INITIAL_VOLUME = 0.5  # in fL
 # TODO: concentrating factor bestimmen (Verhältnis Volumenzunahme Parasit / Vacuole)
-CONCENTRATING_FACTOR = 0.37  # vesicle volume lost through osmosis
+CONCENTRATING_FACTOR = 1  # vesicle volume lost through osmosis
 UCF_TO_FMOL = 10 * 10**(-3)
 
 def get_volume(t):
