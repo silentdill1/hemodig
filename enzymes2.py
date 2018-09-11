@@ -28,8 +28,8 @@ plas1Concentration = 30 * 10**(-6)
 iPepConcentration = 30 * 10**(-6)
 fal2Concentration = 50 * 10**(-6)
 hdpConcentration = 50 * 10**(-6)
-lpPepConcentration = 50 * 10**(-6)
-dpapConcentration = 50 * 10**(-6)
+lpPepConcentration = 80 * 10**(-6)
+dpapConcentration = 100 * 10**(-6)
 apConcentration = 80 * 10**(-6)
 
 

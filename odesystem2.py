@@ -93,15 +93,19 @@ def derivative(abundances, t):
             end_index = enzyme.indices[0][1]
             max_enzyme_abundance = enzyme.MAX_ENZYME_ABUNDANCE
             k_cat_k_m = enzyme.kCatKm
+            if enzyme.abundance:
+                relative_enzyme_abundance = enzyme.abundance[eci]
+            else:
+                relative_enzyme_abundance = 1
             for i in range(start_index, end_index+1):
                 if concentrations[i] != 0:  # check if substrate has concentration
                     p = get_available_enzyme_concentration(concentrations[i],
                                                            absolute_concentration_of_possible_substrates)
                     # TODO: get abundance data according to eci if possible
-                    abundance_changes[i] += -p * max_enzyme_abundance * k_cat_k_m * concentrations[i]
+                    abundance_changes[i] += -p * max_enzyme_abundance * relative_enzyme_abundance * k_cat_k_m * concentrations[i]
                     # decay of substrate
                     if enzyme is fal2:
-                        abundance_changes[1] += p * max_enzyme_abundance * k_cat_k_m * concentrations[i]
+                        abundance_changes[1] += p * max_enzyme_abundance * relative_enzyme_abundance * k_cat_k_m * concentrations[i]
                         # falcipain II releases fpp from substrate
                     length_of_substrate = lengths[i]
                     n = get_number_of_cuts(enzyme, length_of_substrate)
@@ -113,7 +117,7 @@ def derivative(abundances, t):
                             length_of_fragment2 = length_of_substrate - length_of_fragment1
                             index_of_fragment1 = names[str(length_of_fragment1)]
                             index_of_fragment2 = names[str(length_of_fragment2)]
-                            abundance_change_of_fragments = p / n * max_enzyme_abundance * k_cat_k_m * concentrations[i]
+                            abundance_change_of_fragments = p / n * max_enzyme_abundance * relative_enzyme_abundance * k_cat_k_m * concentrations[i]
                             abundance_changes[index_of_fragment1] += abundance_change_of_fragments
                             abundance_changes[index_of_fragment2] += abundance_change_of_fragments
                     else:
@@ -126,7 +130,7 @@ def derivative(abundances, t):
                             else:
                                 index_of_fragment1 = names[str(length_of_fragment1)]
                                 index_of_fragment2 = names[str(length_of_fragment2)+'wFpp']
-                            abundance_change_of_fragments = p / n * max_enzyme_abundance * k_cat_k_m * concentrations[i]
+                            abundance_change_of_fragments = p / n * max_enzyme_abundance * relative_enzyme_abundance * k_cat_k_m * concentrations[i]
                             abundance_changes[index_of_fragment1] += abundance_change_of_fragments
                             abundance_changes[index_of_fragment2] += abundance_change_of_fragments
         if enzyme.indices[1] != 'None':  # operates on sequences without fpp
@@ -139,7 +143,7 @@ def derivative(abundances, t):
                     p = get_available_enzyme_concentration(concentrations[i],
                                                            absolute_concentration_of_possible_substrates)
                     # TODO: get abundance data according to eci if possible
-                    abundance_changes[i] += -p * max_enzyme_abundance * k_cat_k_m * concentrations[i]
+                    abundance_changes[i] += -p * max_enzyme_abundance * relative_enzyme_abundance * k_cat_k_m * concentrations[i]
                     # decay of substrate
                     length_of_substrate = lengths[i]
                     if enzyme.endBased:
@@ -153,7 +157,7 @@ def derivative(abundances, t):
                         length_of_fragment2 = length_of_substrate - length_of_fragment1
                         index_of_fragment1 = names[str(length_of_fragment1)]
                         index_of_fragment2 = names[str(length_of_fragment2)]
-                        abundance_change_of_fragments = p / n * max_enzyme_abundance * k_cat_k_m * concentrations[i]
+                        abundance_change_of_fragments = p / n * max_enzyme_abundance * relative_enzyme_abundance * k_cat_k_m * concentrations[i]
                         abundance_changes[index_of_fragment1] += abundance_change_of_fragments
                         abundance_changes[index_of_fragment2] += abundance_change_of_fragments
                         if enzyme.endBased:

@@ -13,7 +13,7 @@ pwFppAbundance = []  # peptides with fpp
 lpAbundance = []
 spAbundance = []
 dpAbundance = []
-# asAbundance = []
+asAbundance = []
 
 currentIndex = 0
 for values in n:
@@ -39,7 +39,7 @@ for values in n:
         lpAbundance[currentIndex] += values[i]
 
     dpAbundance.append(values[names['2']])
-    # asAbundance.append(values[names['1']])
+    asAbundance.append(values[names['1']])
     currentIndex += 1
 
 Abundances = [hbAbundance, hzAbundance, ipAbundance, pwFppAbundance, lpAbundance,
@@ -47,21 +47,14 @@ Abundances = [hbAbundance, hzAbundance, ipAbundance, pwFppAbundance, lpAbundance
 AbundanceNames = ['hb', 'hz', 'ip', 'wfpp', 'lp', 'sp', 'dp']
 fig = plt.figure()
 plot = fig.add_subplot(111)
+'''
 for i in range(0, len(Abundances)):
     plot.plot(odesystem2.timeGrid, Abundances[i], label=AbundanceNames[i])
 plot.plot(expValues[0], expValues[1], label="exp hz values")
+'''
+plot.plot(odesystem2.timeGrid, asAbundance, label='amino acids')
 plot.set_ylabel("n [fmol]")
 plot.set_xlabel("t [h]")
 plot.legend(fontsize='small')
-'''
-plot2 = fig.add_subplot(222)
-timegrid = np.linspace(0, 40, 100)
-vollist = []
-
-for time in timegrid:
-    vollist.append(get_volume(time))
-
-plot2.plot(timegrid, vollist)
-'''
 plt.show()
-fig.savefig('plot_intermediates')
+fig.savefig('plot_amino_acids')
