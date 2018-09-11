@@ -40,6 +40,7 @@ class Enzyme:
                     # save index in cleavage site array for future addition of LiNs for AAs in vicinity
                     peptide.cleavageSites.append([amino_acid_index, motif[1]])  # create new cleavage site
                     # motif[1] is the LiN for current cleavage motif
+                    LiN = motif[1]
                     available_amino_acid_indices.remove(amino_acid_index)
                     # current amino acid is no longer available as cleavage option,
                     # since a cleavage site there is already taken into account
@@ -54,9 +55,11 @@ class Enzyme:
                                 if peptide.sequence[index_of_nearby_amino_acid] == motif2[0]:
                                     peptide.cleavageSites[cleavage_site_index][1] += motif2[1]  # add LiN of motif
                                     # cleavageSites = list of lists of position after which cut happens and LiN, e.g. [112, 5]
+                                    LiN += motif2[1]
                                     available_amino_acid_indices.remove(index_of_nearby_amino_acid)  # amino acid no longer available for cleavage site
                                     if i < 0:  # removing AAs index before current index -> moves and would skip one index
                                         index_of_amino_acid_index -= 1
+                    peptide.sumOfLiNsForAllCleavageSites += LiN
                 else:
                     index_of_amino_acid_index += 1
 
@@ -70,6 +73,7 @@ testSequence = ('A', 'X', 'X', 'A', 'L', 'X', 'X', 'X', 'X', 'A', 'T', 'L', 'F',
 pep = peptides.Peptide(testSequence, len(testSequence))
 plas2.configure_cleavage_sites(pep)
 print(pep.cleavageSites)
+print(pep.sumOfLiNsForAllCleavageSites)
 
 
 
