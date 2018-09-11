@@ -4,8 +4,11 @@ class Peptide:
         self.length = length
         self.cleavageSites = []
         # list of lists containing indices for possible cleavage and
-        # corresponding likelihood number (see enzymes3 for documentation),
+        # corresponding likelihood number (LiN) (see enzymes3 for documentation),
         # has to be updated according to current enzymes specificity
+        self.sumOfLiNsForAllCleavageSites = 0
+        # sum of LiNs for all cleavage sites for current enzyme,
+        # has to be reset to 0 upon enzyme change
 
 
 class Peptides:
