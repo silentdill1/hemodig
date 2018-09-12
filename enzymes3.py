@@ -23,6 +23,9 @@ class Nuclease:
         self.endAAIndex = end_aa_index  # index of last amino acid that could be cleavage center for exonuclease
 
     def configure_cleavage_sites(self, peptide):
+        peptide.cleavageSites = []  # resetting attributes
+        peptide.sumOfLiNsForAllCleavageSites = 0
+
         available_amino_acid_indices = []
         # indices of amino acids in peptide who are not yet part of a cleavage site
         available_motif_indices = []
@@ -37,10 +40,14 @@ class Nuclease:
             for i in range(0, peptide.length):
                 available_amino_acid_indices.append(i)
 
+        found_cleavage_site = False
+        # is used only if enzyme is exonuclease,
+        # changed to true after first cleavage site is found and terminates search
+
         for i in range(0, len(self.cleavageMotifs)):
                 available_motif_indices.append(i)
 
-        while len(available_motif_indices) != 0:
+        while len(available_motif_indices) != 0 and not found_cleavage_site:
             index_of_motif_index = np.random.randint(0, len(available_motif_indices))  # pick first AS for cleavage site randomly
             # TODO: randomized changes between current motif (currently looks for 'A' throughout the whole peptide chain,
             # TODO: until it takes new motif for first AA of cleavage site)
@@ -48,7 +55,7 @@ class Nuclease:
             motif = self.cleavageMotifs[motif_index]  # motif = tuple of AA Code and LiN, e.g. ('X', 4)
             index_of_amino_acid_index = 0
 
-            while index_of_amino_acid_index < len(available_amino_acid_indices):
+            while index_of_amino_acid_index < len(available_amino_acid_indices) and not found_cleavage_site:
                 amino_acid_index = available_amino_acid_indices[index_of_amino_acid_index]
                 amino_acid = peptide.sequence[amino_acid_index]
                 if amino_acid_index != (peptide.length-1) and amino_acid == motif[0]:  # no cleavage after last AA
@@ -76,6 +83,8 @@ class Nuclease:
                                     if i < 0:  # removing AAs index before current index -> moves and would skip one index
                                         index_of_amino_acid_index -= 1
                     peptide.sumOfLiNsForAllCleavageSites += LiN
+                    if self.isExonuclease:
+                        found_cleavage_site = True
                 else:
                     index_of_amino_acid_index += 1
 
@@ -84,11 +93,12 @@ class Nuclease:
 
 hydrophobicAminoAcidMotifs = (('A', 1), ('G', 1), ('H', 1), ('I', 1), ('L', 1), ('M', 1), ('F', 1),
                               ('P', 1), ('V', 1))
-plas2 = Nuclease('Plasmepsin II', 'PF14_0077', False, hydrophobicAminoAcidMotifs, 500 * 10**3, 30 * 10**(-6))
-fln = Nuclease('Falcilysin', '', True, hydrophobicAminoAcidMotifs, )
+plas2 = Nuclease('Plasmepsin II', 'PF14_0077', False, hydrophobicAminoAcidMotifs, 500 * 10**3, 30 * 10**(-6), 146, 80)
+fln = Nuclease('Falcilysin', '', True, hydrophobicAminoAcidMotifs, 148 * 10**3, 80 * 10**(-6), 25, 8, 0, 8)
 testSequence = ('A', 'X', 'X', 'A', 'L', 'X', 'X', 'X', 'X', 'A', 'T', 'L', 'F', 'L', 'L', 'X', 'X', 'A', 'T', 'L', 'F')
 pep = peptides.Peptide(testSequence, len(testSequence))
 plas2.configure_cleavage_sites(pep)
+fln.configure_cleavage_sites(pep)
 print(pep.cleavageSites)
 print(pep.sumOfLiNsForAllCleavageSites)
 
