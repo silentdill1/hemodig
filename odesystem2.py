@@ -101,7 +101,6 @@ def derivative(abundances, t):
                 if concentrations[i] != 0:  # check if substrate has concentration
                     p = get_available_enzyme_concentration(concentrations[i],
                                                            absolute_concentration_of_possible_substrates)
-                    # TODO: get abundance data according to eci if possible
                     abundance_changes[i] += -p * max_enzyme_abundance * relative_enzyme_abundance * k_cat_k_m * concentrations[i]
                     # decay of substrate
                     if enzyme is fal2:
@@ -142,7 +141,6 @@ def derivative(abundances, t):
                     k_cat_k_m = enzyme.kCatKm
                     p = get_available_enzyme_concentration(concentrations[i],
                                                            absolute_concentration_of_possible_substrates)
-                    # TODO: get abundance data according to eci if possible
                     abundance_changes[i] += -p * max_enzyme_abundance * relative_enzyme_abundance * k_cat_k_m * concentrations[i]
                     # decay of substrate
                     length_of_substrate = lengths[i]
