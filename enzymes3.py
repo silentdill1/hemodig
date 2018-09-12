@@ -1,11 +1,14 @@
 import peptides
 import numpy as np
+import sys
 
 
-class Enzyme:
-    def __init__(self, name, pf_id_old, cleavage_motifs, k_cat_k_m, max_enzyme_abundance):
+class Nuclease:
+    def __init__(self, name, pf_id_old, is_exonuclease, cleavage_motifs, k_cat_k_m, max_enzyme_abundance,
+                 min_length, max_length, start_aa_index=-1, end_aa_index=-1):
         self.name = name
         self.pfidOld = pf_id_old
+        self.isExonuclease = is_exonuclease
         self.cleavageMotifs = cleavage_motifs
         # tuple of tuples containing amino acid in one letter code and corresponding change
         # in likelihood number (LiN), e.g. ('R', 3) means if 'R' is found in the vicinity of
@@ -14,16 +17,29 @@ class Enzyme:
         # n - sum of LiNs of previously found amino acids for all cleavage sites
         self.kCatKm = k_cat_k_m  # in 1/(s*M)
         self.maxEnzymeAbundance = max_enzyme_abundance  # in fmol
+        self.minLength = min_length  # minimum length of peptide that could be cleaved
+        self.maxLength = max_length
+        self.startAAIndex = start_aa_index  # index of first amino acid that could be cleavage center for exonuclease
+        self.endAAIndex = end_aa_index  # index of last amino acid that could be cleavage center for exonuclease
 
     def configure_cleavage_sites(self, peptide):
         available_amino_acid_indices = []
         # indices of amino acids in peptide who are not yet part of a cleavage site
         available_motif_indices = []
         # indices of amino acids in peptide who are not yet part of a cleavage site
-        for i in range(0, peptide.length):
-            available_amino_acid_indices.append(i)
+
+        if self.isExonuclease:  # Exonuclease operates only on N terminus of protein
+            if self.startAAIndex == -1:
+                sys.exit('No startAAIndex for exonuclease')
+            for i in range(self.startAAIndex, self.endAAIndex+1):
+                available_amino_acid_indices.append(i)
+        else:
+            for i in range(0, peptide.length):
+                available_amino_acid_indices.append(i)
+
         for i in range(0, len(self.cleavageMotifs)):
                 available_motif_indices.append(i)
+
         while len(available_motif_indices) != 0:
             index_of_motif_index = np.random.randint(0, len(available_motif_indices))  # pick first AS for cleavage site randomly
             # TODO: randomized changes between current motif (currently looks for 'A' throughout the whole peptide chain,
@@ -68,7 +84,8 @@ class Enzyme:
 
 hydrophobicAminoAcidMotifs = (('A', 1), ('G', 1), ('H', 1), ('I', 1), ('L', 1), ('M', 1), ('F', 1),
                               ('P', 1), ('V', 1))
-plas2 = Enzyme('Plasmepsin II', 'PF14_0077', hydrophobicAminoAcidMotifs, 500 * 10**3, 30 * 10**(-6))
+plas2 = Nuclease('Plasmepsin II', 'PF14_0077', False, hydrophobicAminoAcidMotifs, 500 * 10**3, 30 * 10**(-6))
+fln = Nuclease('Falcilysin', '', True, hydrophobicAminoAcidMotifs, )
 testSequence = ('A', 'X', 'X', 'A', 'L', 'X', 'X', 'X', 'X', 'A', 'T', 'L', 'F', 'L', 'L', 'X', 'X', 'A', 'T', 'L', 'F')
 pep = peptides.Peptide(testSequence, len(testSequence))
 plas2.configure_cleavage_sites(pep)
