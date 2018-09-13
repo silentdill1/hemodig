@@ -1,13 +1,22 @@
 import peptides
 import numpy as np
 import sys
+from dataimport import initialize_parameters
 
 
-class Peptidase:
-    def __init__(self, name, pf_id_old, is_exopeptidase, cleavage_motifs, k_cat_k_m, max_enzyme_abundance,
-                 min_length, max_length, start_aa_index=-1, end_aa_index=-1, amino_peptidase_index=-1):
-        self.name = name
-        self.pfidOld = pf_id_old
+class Enzyme(object):
+    def __init__(self, name):
+            self.name = name
+            self.pfidOld = ''  # to be initialized by following method
+            self.kCatKm = 0
+            self.maxAbundance = 0
+            initialize_parameters(self)
+
+
+class Peptidase(Enzyme):
+    def __init__(self, name, is_exopeptidase, cleavage_motifs, min_length, max_length,
+                 start_aa_index=-1, end_aa_index=-1, amino_peptidase_index=-1):
+        Enzyme.__init__(self, name)
         self.isExopeptidase = is_exopeptidase
         self.cleavageMotifs = cleavage_motifs
         # tuple of tuples containing amino acid in one letter code and corresponding change
@@ -15,8 +24,6 @@ class Peptidase:
         # current cleavage site cleavage likelihood increases to from o/n to (o+3)/(n+3)
         # o - sum of LiNs of previously found amino acids for current cleavage site
         # n - sum of LiNs of previously found amino acids for all cleavage sites
-        self.kCatKm = k_cat_k_m  # in 1/(s*M)
-        self.maxEnzymeAbundance = max_enzyme_abundance  # in fmol
         self.minLength = min_length  # minimum length of peptide that could be cleaved
         self.maxLength = max_length
         self.startAAIndex = start_aa_index  # index of first amino acid that could be cleavage center for exopeptidase
@@ -145,13 +152,16 @@ lPepMotifs = (('R', 2), ('L', 2), ('F', 2))
 flnMotifs = (('E', 2), ('M', 2), ('H', 2), ('S', 3), ('F', 2))
 proApMotif = [('P', 1)]
 
+plas1 = Peptidase('Plasmepsin I', False, (), 0, 0)  # special initiator role
+plas2 = Peptidase('Plasmepsin II', False, hydrophobicAminoAcidMotifs, 146, 80)
+fal2 = Peptidase('Falcipain II', False, hydrophobicAminoAcidMotifs, 80, 20)
+fln = Peptidase('Falcilysin', True, hydrophobicAminoAcidMotifs, 0, 8, 3, 8)
 
-plas2 = Peptidase('Plasmepsin II', 'PF14_0077', False, hydrophobicAminoAcidMotifs, 500 * 10**3, 30 * 10**(-6), 146, 80)
-fln = Peptidase('Falcilysin', '', True, hydrophobicAminoAcidMotifs, 148 * 10**3, 80 * 10**(-6), 25, 8, 0, 8)
-proAp = Peptidase('Prolin Aminopeptidase', '', True, tuple(proApMotif), 148 * 10**3, 80 * 10**(-6), 4, 2, amino_peptidase_index=0)
+proAp = Peptidase('Prolyl aminopeptidase', True, tuple(proApMotif), 4, 2, amino_peptidase_index=0)
 testSequence = ('A', 'X', 'X', 'A', 'L', 'X', 'X', 'X', 'X', 'A', 'T', 'L', 'F', 'L', 'L', 'X', 'X', 'A', 'T', 'L', 'F')
 pep = peptides.Peptide(testSequence, len(testSequence))
-print()
+enzymes = []
+print(proAp.kCatKm)
 
 
 
