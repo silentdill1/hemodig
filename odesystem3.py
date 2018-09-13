@@ -2,7 +2,7 @@ import numpy as np
 from datainterpretation2 import names, lengths
 from foodvacuole import get_volume, get_hb_abundance_change
 from peptides import Peptides, Peptide
-from enzymes3 import plas1, hdp, enzymes
+from enzymes3 import plas1, fal2, hdp, enzymes
 
 
 def get_relative_enzyme_concentration_index(t):

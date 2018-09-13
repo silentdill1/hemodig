@@ -10,12 +10,14 @@ class Enzyme(object):
             self.pfidOld = ''  # to be initialized by following method
             self.kCatKm = 0
             self.maxAbundance = 0
+            self.line = -1
+            self.abundance = []
             initialize_parameters(self)
 
 
 class Peptidase(Enzyme):
     def __init__(self, name, is_exopeptidase, cleavage_motifs, min_length, max_length,
-                 start_aa_index=-1, end_aa_index=-1, amino_peptidase_index=-1):
+                 start_aa_index=-1, end_aa_index=-1, amino_peptidase_index=-1, cuts_everything=False):
         Enzyme.__init__(self, name)
         self.isExopeptidase = is_exopeptidase
         self.cleavageMotifs = cleavage_motifs
@@ -29,6 +31,7 @@ class Peptidase(Enzyme):
         self.startAAIndex = start_aa_index  # index of first amino acid that could be cleavage center for exopeptidase
         self.endAAIndex = end_aa_index  # index of last amino acid that could be cleavage center for exopeptidase
         self.aminoPeptidaseIndex = amino_peptidase_index
+        self.cutsEverything = cuts_everything
 
     def configure_cleavage_sites(self, peptide):  # for endopeptidases, falcilysin and dpap
         peptide.cleavageSites = []  # resetting attributes
@@ -108,10 +111,21 @@ class Peptidase(Enzyme):
         else:
             api = self.aminoPeptidaseIndex  # index of amino acid to be checked for motif compatibility
 
+        if self.cutsEverything:  # enzymes that can cleave after every amino acid
+            if self.cleavageMotifs:  # cuts after everything but has preference
+                peptide.cleavageSites.append([0, 0.3])
+                peptide.sumOfLiNsForAllCleavageSites = 1
+            else:  # subtilisin (no preference)
+                peptide.cleavageSites.append([0, 1])
+                peptide.sumOfLiNsForAllCleavageSites = 1
         for motif in self.cleavageMotifs:
             if peptide.sequence[api] == motif[0]:
-                peptide.cleavageSites.append([0, motif[1]])
-                peptide.sumOfLiNsForAllCleavageSites = 1
+                if peptide.cleavageSites:
+                    peptide.cleavageSites[0] += [0, motif[1]]  # preferred AA found
+                    peptide.sumOfLiNsForAllCleavageSites = 1
+                else:
+                    peptide.cleavageSites.append([0, motif[1]])
+                    peptide.sumOfLiNsForAllCleavageSites = 1
 
 
 def add_motif_tuples(motif_tuple1, motif_tuple2):
@@ -147,21 +161,28 @@ def add_motif_tuples(motif_tuple1, motif_tuple2):
 hydrophobicAminoAcidMotifs = (('A', 1), ('G', 1), ('H', 1), ('I', 1), ('L', 1), ('M', 1), ('F', 1),
                               ('P', 1), ('V', 1))
 chargedAminoAcidMotifs = (('D', -10), ('E', -10), ('K', -10))
-iPepMotifs = (('F', 2), ('I', 2))
-lPepMotifs = (('R', 2), ('L', 2), ('F', 2))
+polarAminoAcidMotifs = (('D', 1), ('E', 1), ('K', 1), )
+iPepMotifs = add_motif_tuples(add_motif_tuples((('F', 2), ('I', 2)), hydrophobicAminoAcidMotifs), chargedAminoAcidMotifs)
+lPepMotifs = add_motif_tuples((('R', 2), ('L', 2), ('F', 2)), hydrophobicAminoAcidMotifs)
 flnMotifs = (('E', 2), ('M', 2), ('H', 2), ('S', 3), ('F', 2))
+dpapMotifs = (('R', -10), ('P', -10), ('K', -10))
 proApMotif = [('P', 1)]
-
+# TODO: deal with negative LiN values!!!
 plas1 = Peptidase('Plasmepsin I', False, (), 0, 0)  # special initiator role
-plas2 = Peptidase('Plasmepsin II', False, hydrophobicAminoAcidMotifs, 146, 80)
-fal2 = Peptidase('Falcipain II', False, hydrophobicAminoAcidMotifs, 80, 20)
-fln = Peptidase('Falcilysin', True, hydrophobicAminoAcidMotifs, 0, 8, 3, 8)
+plas2 = Peptidase('Plasmepsin II', False, iPepMotifs, 80, 146)
+plas4 = Peptidase('Plasmepsin IV', False, iPepMotifs, 80, 146)
+fal2 = Peptidase('Falcipain II', False, lPepMotifs, 20, 80)
+hdp = Enzyme('Heme Detoxification Protein')
+lPep = Peptidase('HAP, Falcipain III', False, lPepMotifs, 20, 80)
+fln = Peptidase('Falcilysin', True, flnMotifs, 8, 25, 3, 8)
+dpap = Peptidase('Dipeptidyl aminopeptidase', True, dpapMotifs, 4, 8, 1, 1)
+apAp = Peptidase('Aminoacyl prolin aminopeptidase', True, ('P', 1), 2, 4, amino_peptidase_index=1)
+alaAp = Peptidase('Alanyl aminopeptidase', True, (('A', 1), ('P', 0.1)), 2, 4, amino_peptidase_index=0, cuts_everything=True)
 
 proAp = Peptidase('Prolyl aminopeptidase', True, tuple(proApMotif), 4, 2, amino_peptidase_index=0)
 testSequence = ('A', 'X', 'X', 'A', 'L', 'X', 'X', 'X', 'X', 'A', 'T', 'L', 'F', 'L', 'L', 'X', 'X', 'A', 'T', 'L', 'F')
 pep = peptides.Peptide(testSequence, len(testSequence))
 enzymes = []
-print(proAp.kCatKm)
 
 
 
