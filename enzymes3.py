@@ -129,11 +129,12 @@ def add_motif_tuples(motif_tuple1, motif_tuple2):
             for pair in doubles:
                 if i == pair[1]:
                     no_double = False
-                if no_double:
+            if no_double:
                     list_sum_of_tuples.append(motif_tuple2[i])
+    for pair in doubles:
+        list_sum_of_tuples.append((motif_tuple1[pair[0]][0], max(motif_tuple1[pair[0]][1], motif_tuple2[pair[1]][1])))
 
-
-
+    return tuple(list_sum_of_tuples)
 
 
 hydrophobicAminoAcidMotifs = (('A', 1), ('G', 1), ('H', 1), ('I', 1), ('L', 1), ('M', 1), ('F', 1),
@@ -147,14 +148,11 @@ proApMotif = [('P', 1)]
 
 plas2 = Peptidase('Plasmepsin II', 'PF14_0077', False, hydrophobicAminoAcidMotifs, 500 * 10**3, 30 * 10**(-6), 146, 80)
 fln = Peptidase('Falcilysin', '', True, hydrophobicAminoAcidMotifs, 148 * 10**3, 80 * 10**(-6), 25, 8, 0, 8)
-proAp = Peptidase('Prolin Aminopeptidase', '', True, tuple(proApMotif), 148 * 10**3, 80 * 10**(-6), 4, 2, 0, 0)
-testSequence = ('P', 'X', 'X', 'A', 'L', 'X', 'X', 'X', 'X', 'A', 'T', 'L', 'F', 'L', 'L', 'X', 'X', 'A', 'T', 'L', 'F')
+proAp = Peptidase('Prolin Aminopeptidase', '', True, tuple(proApMotif), 148 * 10**3, 80 * 10**(-6), 4, 2, amino_peptidase_index=0)
+testSequence = ('A', 'X', 'X', 'A', 'L', 'X', 'X', 'X', 'X', 'A', 'T', 'L', 'F', 'L', 'L', 'X', 'X', 'A', 'T', 'L', 'F')
 pep = peptides.Peptide(testSequence, len(testSequence))
-plas2.configure_cleavage_sites(pep)
-fln.configure_cleavage_sites(pep)
-proAp.
-print(pep.cleavageSites)
-print(pep.sumOfLiNsForAllCleavageSites)
+print()
+
 
 
 
