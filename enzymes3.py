@@ -206,7 +206,7 @@ proAp = Peptidase('Prolyl aminopeptidase', True, tuple(proApMotif), 2, 4, amino_
 subtilisin = Peptidase('Subtilisin', True, (), 2, 4, amino_peptidase_index=0, cuts_everything=True)
 
 testSequence = ('L', 'P', 'X', 'A', 'L', 'X', 'X', 'X', 'X', 'A', 'T', 'L', 'F', 'L', 'L', 'X', 'X', 'A', 'T', 'L', 'F')
-pep = peptides.Peptide(testSequence, len(testSequence), 0)
+pep = peptides.Peptide(testSequence, len(testSequence), 0, False)
 
 
 enzymes = [plas2, plas4, fal2, lPep, fln, dpap, leuAp, aspAp, metAp, apAp, alaAp, proAp, subtilisin]
