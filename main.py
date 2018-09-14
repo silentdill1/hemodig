@@ -1,9 +1,16 @@
 import matplotlib.pyplot as plt
 from scipy.integrate import odeint
-import odesystem2
+import odesystem3
+# import odesystem2
 from expdataimport import expValues
 from datainterpretation import names
+from peptides import Peptides
 
+currentPeptideFragments = Peptides(108)
+args = [currentPeptideFragments]
+n = odeint(odesystem3.derivative, odesystem3.initialAbundances, odesystem3.timeGrid, tuple(args))
+
+'''
 n = odeint(odesystem2.derivative, odesystem2.initialAbundances, odesystem2.timeGrid)
 
 hbAbundance = []
@@ -47,14 +54,13 @@ Abundances = [hbAbundance, hzAbundance, ipAbundance, pwFppAbundance, lpAbundance
 AbundanceNames = ['hb', 'hz', 'ip', 'wfpp', 'lp', 'sp', 'dp']
 fig = plt.figure()
 plot = fig.add_subplot(111)
-'''
 for i in range(0, len(Abundances)):
     plot.plot(odesystem2.timeGrid, Abundances[i], label=AbundanceNames[i])
 plot.plot(expValues[0], expValues[1], label="exp hz values")
-'''
 plot.plot(odesystem2.timeGrid, asAbundance, label='amino acids')
 plot.set_ylabel("n [fmol]")
 plot.set_xlabel("t [h]")
 plot.legend(fontsize='small')
 plt.show()
 fig.savefig('plot_amino_acids2')
+'''

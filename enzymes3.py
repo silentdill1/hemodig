@@ -211,3 +211,4 @@ pep = peptides.Peptide(testSequence, len(testSequence), 0, False)
 
 enzymes = [plas2, plas4, fal2, lPep, fln, dpap, leuAp, aspAp, metAp, apAp, alaAp, proAp, subtilisin]
 
+print(plas1.abundance)

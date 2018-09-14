@@ -38,7 +38,6 @@ def get_void_array():
 
 timeGrid = np.linspace(2, 47, 101)
 initialAbundances = get_void_array()
-currentPeptideFragments = Peptides(108)
 # [Hb, Fpp, Hz, 1, ... 108]
 # number = peptide length in AAs
 
@@ -113,10 +112,10 @@ def add_peptide_fragments(peptide, number_of_peptides_for_length, total_abundanc
             new_peptide_fragments.peptides[length_of_fragment2][fragment2_index_in_peptides_of_length].abundance += abundance_change_of_fragments
 
 
-def derivative(abundances, t):
+def derivative(abundances, t, current_peptide_fragments):
     concentrations = []
     abundance_changes = get_void_array()
-    new_peptide_fragments = deepcopy(currentPeptideFragments)
+    new_peptide_fragments = deepcopy(current_peptide_fragments)
     food_vacuole_volume = get_volume(t)
     for abundance in abundances:
         concentrations.append(abundance/food_vacuole_volume)
@@ -170,7 +169,7 @@ def derivative(abundances, t):
                 abundance_changes[i] += -conversion
                 # decay of substrate
                 increase_of_products = conversion
-                peptides_for_length = currentPeptideFragments.peptides[lengths[str(i)]]  # takes peptides from CURRENT state
+                peptides_for_length = current_peptide_fragments.peptides[lengths[str(i)]]  # takes peptides from CURRENT state
                 number_of_peptides_for_length = len(peptides_for_length)
                 for peptide in peptides_for_length:
                     if enzyme is fal2:  # fal2 removes fpp
@@ -182,5 +181,5 @@ def derivative(abundances, t):
                         #  changes peptides in NEW state
                     else:
                         enzyme.configure_cleavage_sites(peptide)
-        currentPeptideFragments = new_peptide_fragments  # actualization
+        current_peptide_fragments = new_peptide_fragments  # actualization
         return abundance_changes
