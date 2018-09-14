@@ -34,6 +34,11 @@ class Peptidase(Enzyme):
         self.cutsEverything = cuts_everything
 
     def configure_cleavage_sites(self, peptide):  # for endopeptidases, falcilysin and dpap
+
+        """ adds lists of [AA index before cleavage, cleavage likelihood number(LiN)] to given peptides
+            cleavageSites list and actualizes corresponding sumOfLiNsForAllCleavageSites (SUM), so that cleavage
+            likelihood p for a site is p = LiN/SUM """
+
         peptide.cleavageSites = []  # resetting attributes
         peptide.sumOfLiNsForAllCleavageSites = 0
 
@@ -57,6 +62,8 @@ class Peptidase(Enzyme):
         # changed to true after first cleavage site is found and terminates search
 
         for i in range(0, len(self.cleavageMotifs)):
+            if self.cleavageMotifs[i][1] > 0:
+                # only motifs with positive LiNs may be used as cleavage center (negative ones only decrease cleavage likelihood)
                 available_motif_indices.append(i)
 
         while len(available_motif_indices) != 0 and not found_cleavage_site:
@@ -71,6 +78,7 @@ class Peptidase(Enzyme):
                 amino_acid_index = available_amino_acid_indices[index_of_amino_acid_index]
                 amino_acid = peptide.sequence[amino_acid_index]
                 if amino_acid_index != (peptide.length-1) and amino_acid == motif[0]:  # no cleavage after last AA
+                    print(amino_acid)
                     cleavage_site_index = len(peptide.cleavageSites)
                     # save index in cleavage site array for future addition of LiNs for AAs in vicinity
                     peptide.cleavageSites.append([amino_acid_index, motif[1]])  # create new cleavage site
@@ -94,15 +102,22 @@ class Peptidase(Enzyme):
                                     available_amino_acid_indices.remove(index_of_nearby_amino_acid)  # amino acid no longer available for cleavage site
                                     if i < 0:  # removing AAs index before current index -> moves and would skip one index
                                         index_of_amino_acid_index -= 1
-                    peptide.sumOfLiNsForAllCleavageSites += LiN
-                    if self.isExopeptidase:
-                        found_cleavage_site = True
+                    if LiN > 0:  # only cleavage sites with positive likelihood are to be considered
+                        peptide.sumOfLiNsForAllCleavageSites += LiN
+                        if self.isExopeptidase:
+                            found_cleavage_site = True
+                    else:
+                        peptide.cleavageSites.pop()
                 else:
                     index_of_amino_acid_index += 1
 
             available_motif_indices.remove(motif_index)
 
     def first_aa_cleavage(self, peptide):  # for single aa cleavage
+        """ adds a single [0 (N Terminus), cleavage likelihood number(LiN)] to given peptides
+            cleavageSites list and actualizes corresponding sumOfLiNsForAllCleavageSites (SUM), so that cleavage
+            likelihood p for end based cleavage is p = LiN/SUM """
+
         peptide.cleavageSites = []  # resetting attributes
         peptide.sumOfLiNsForAllCleavageSites = 0
 
@@ -128,12 +143,13 @@ class Peptidase(Enzyme):
                     else:
                         peptide.cleavageSites.append([0, motif[1]])
                         peptide.sumOfLiNsForAllCleavageSites = 1
-                else:  # for negative LiNs no cleavage
-                    peptide.cleavageSites.remove([0, 0.3])
-                    peptide.sumOfLiNsForAllCleavageSites = 0
+            else:  # for negative LiNs no cleavage
+                peptide.cleavageSites = []
+                peptide.sumOfLiNsForAllCleavageSites = 0
 
 
 def add_motif_tuples(motif_tuple1, motif_tuple2):
+    #  checks for doubles in both motif tuples, adds only one to sum with highest LiN of the both
     list_sum_of_tuples = []
     doubles = []
     for motif_index1 in range(0, len(motif_tuple1)):
@@ -165,8 +181,8 @@ def add_motif_tuples(motif_tuple1, motif_tuple2):
 
 hydrophobicAminoAcidMotifs = (('A', 1), ('G', 1), ('H', 1), ('I', 1), ('L', 1), ('M', 1), ('F', 1),
                               ('P', 1), ('V', 1))
-chargedAminoAcidMotifs = (('D', -10), ('E', -10), ('K', -10))
-polarAminoAcidMotifs = (('D', 1), ('E', 1), ('K', 1), )
+chargedAminoAcidMotifs = (('D', -10), ('E', -10), ('K', -10), ('R', -10))
+# polarAminoAcidMotifs = (('D', 1), ('E', 1), ('K', 1), )
 iPepMotifs = add_motif_tuples(add_motif_tuples((('F', 2), ('I', 2)), hydrophobicAminoAcidMotifs), chargedAminoAcidMotifs)
 lPepMotifs = add_motif_tuples((('R', 2), ('L', 2), ('F', 2)), hydrophobicAminoAcidMotifs)
 flnMotifs = (('E', 2), ('M', 2), ('H', 2), ('S', 3), ('F', 2))
@@ -174,7 +190,6 @@ dpapMotifs = (('R', -10), ('P', -10), ('K', -10))
 metApMotif = [('M', 1)]
 proApMotif = [('P', 1)]
 
-# TODO: deal with negative LiN values!!!
 plas1 = Peptidase('Plasmepsin I', False, (), 0, 0)  # special initiator role
 plas2 = Peptidase('Plasmepsin II', False, iPepMotifs, 80, 146)
 plas4 = Peptidase('Plasmepsin IV', False, iPepMotifs, 80, 146)
@@ -186,18 +201,31 @@ dpap = Peptidase('Dipeptidyl aminopeptidase', True, dpapMotifs, 4, 8, 1, 1)
 leuAp = Peptidase('Leucyl aminopeptidase', True, (('R', -10), ('K', -10), ('L', 1)), 2, 4, amino_peptidase_index=0, cuts_everything=True)
 aspAp = Peptidase('Aspartyl aminopeptidase', True, (('D', 1), ('E', 0.3)), 2, 4, amino_peptidase_index=0)
 metAp = Peptidase('Methionyl aminopeptidase', True, tuple(metApMotif), 2, 4, amino_peptidase_index=0, cuts_everything=True)
-apAp = Peptidase('Aminoacyl prolin aminopeptidase', True, ('P', 1), 2, 4, amino_peptidase_index=1)
+apAp = Peptidase('Aminoacyl prolin aminopeptidase', True, tuple(proApMotif), 2, 4, amino_peptidase_index=1)
 alaAp = Peptidase('Alanyl aminopeptidase', True, (('A', 1), ('P', 0.1)), 2, 4, amino_peptidase_index=0, cuts_everything=True)
 proAp = Peptidase('Prolyl aminopeptidase', True, tuple(proApMotif), 2, 4, amino_peptidase_index=0)
 subtilisin = Peptidase('Subtilisin', True, (), 2, 4, cuts_everything=True)
-testSequence = ('R', 'X', 'X', 'A', 'L', 'X', 'X', 'X', 'X', 'A', 'T', 'L', 'F', 'L', 'L', 'X', 'X', 'A', 'T', 'L', 'F')
-pep = peptides.Peptide(testSequence, len(testSequence))
-leuAp.first_aa_cleavage(pep)
+
+testSequence = ('L', 'P', 'X', 'A', 'L', 'X', 'X', 'X', 'X', 'A', 'T', 'L', 'F', 'L', 'L', 'X', 'X', 'A', 'T', 'L', 'F')
+pep = peptides.Peptide(testSequence, len(testSequence), 0)
+apAp.first_aa_cleavage(pep)
 print(pep.cleavageSites)
 print(pep.sumOfLiNsForAllCleavageSites)
-enzymes = []
+enzymes = [plas2, plas4, lPep, fln, dpap, leuAp, aspAp, metAp, apAp, alaAp, proAp, subtilisin]
 
 
+def get_fragments(sequence, cut_index):
+    list_segment1 = []
+    list_segment2 = []
+    i = 0
+    while i <= cut_index:
+        list_segment1.append(sequence[i])
+        i += 1
+    while i != len(sequence):
+        list_segment2.append(sequence[i])
+        i += 1
+    return [tuple(list_segment1), tuple(list_segment2)]
 
 
+print(get_fragments(pep.sequence, pep.cleavageSites[0][0]))
 

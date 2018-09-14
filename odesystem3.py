@@ -40,9 +40,22 @@ def get_void_array():
     return void_array
 
 
+def get_fragments(sequence, cut_index):
+    list_segment1 = []
+    list_segment2 = []
+    i = 0
+    while i <= cut_index:
+        list_segment1.append(sequence[i])
+        i += 1
+    while i != len(sequence):
+        list_segment2.append(sequence[i])
+        i += 1
+    return [tuple(list_segment1), tuple(list_segment2)]
+
+
 timeGrid = np.linspace(2, 47, 101)
 initialAbundances = get_void_array()
-currentPeptideFragments = Peptides(141)
+currentPeptideFragments = Peptides(108)
 # [Hb, Fpp, Hz, 20, 22, ... 146, 1, 2 ... 20, 22 ... 70]
 # number = peptide length in AAs
 
@@ -63,7 +76,8 @@ def derivative(abundances, t):
     # TODO: integrate hb beta chain
     abundance_changes[names['108']] += 2 * plas1.kCatKm * plas1.abundance[eci] * concentrations[0] * food_vacuole_volume
     abundance_changes[names['33']] += 2 * plas1.kCatKm * plas1.abundance[eci] * concentrations[0] * food_vacuole_volume
-    #TODO: rest
+    segments = get_fragments( , 33)
+    currentPeptideFragments.peptides.append(Peptide())
     # heme detoxification protein equations
     abundance_changes[names['Fpp']] += -hdp.kCatKm * concentrations[1] * food_vacuole_volume
     # fpp degradation

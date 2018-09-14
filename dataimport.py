@@ -57,6 +57,29 @@ def initialize_parameters(enzyme):
             get_abundance(dfProt, enzyme)
 
 
+AAThreeLetterCode = {'ALA': 'A', 'ARG': 'R', 'ASN': 'N', 'ASP': 'D', 'CYS': 'C', 'GLU': 'E', 'GLN': 'Q', 'GLY': 'G', 'HIS': 'H',
+                     'ILE': 'I', 'LEU': 'L', 'LYS': 'K', 'MET': 'M', 'PHE': 'F', 'PRO': 'P', 'SER': 'S', 'THR': 'T', 'TRP': 'W',
+                     'TYR': 'Y', 'VAL': 'V'}
+
+
+def convert_sequence(aa_list):
+    sequence_list = []
+    for aa in aa_list:
+        sequence_list.append(AAThreeLetterCode[aa])
+    return tuple(sequence_list)
+
+
+def import_aa_list(data_frame, name, length):
+    aa_list = []
+    for i in range(0, length):
+        aa_list.append(data_frame.at[i, name])
+    return aa_list
+
+
+dfHbChains = pd.read_excel('hb_chains_sequence.xlsx', header=0)
+alphaHbChain = convert_sequence(import_aa_list(dfHbChains, 'alpha Hb chain', 141))
+betaHbChain = convert_sequence(import_aa_list(dfHbChains, 'beta Hb chain', 146))
+
 
 
 

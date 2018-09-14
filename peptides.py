@@ -1,7 +1,8 @@
 class Peptide:
-    def __init__(self, sequence, length):
+    def __init__(self, sequence, length, abundance):
         self.sequence = sequence  # tuple of amino acids one letter code
-        self.length = length
+        self.length = length  # in AAs
+        self.abundance = abundance  # in fmol
         self.cleavageSites = []
         # list of lists containing indices for possible cleavage and
         # corresponding likelihood number (LiN) (see enzymes3 for documentation),
