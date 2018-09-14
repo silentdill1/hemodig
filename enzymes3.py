@@ -106,8 +106,9 @@ class Peptidase(Enzyme):
         peptide.cleavageSites = []  # resetting attributes
         peptide.sumOfLiNsForAllCleavageSites = 0
 
-        if self.aminoPeptidaseIndex == -1:
-            sys.exit('No AminopeptidaseIndex given')
+        if self.aminoPeptidaseIndex == -1 and self.cleavageMotifs:
+            # subtilisin has no cleavage motifs -> needs no api
+                sys.exit('No AminopeptidaseIndex given')
         else:
             api = self.aminoPeptidaseIndex  # index of amino acid to be checked for motif compatibility
 
@@ -119,13 +120,17 @@ class Peptidase(Enzyme):
                 peptide.cleavageSites.append([0, 1])
                 peptide.sumOfLiNsForAllCleavageSites = 1
         for motif in self.cleavageMotifs:
-            if peptide.sequence[api] == motif[0]:
-                if peptide.cleavageSites:
-                    peptide.cleavageSites[0] += [0, motif[1]]  # preferred AA found
-                    peptide.sumOfLiNsForAllCleavageSites = 1
-                else:
-                    peptide.cleavageSites.append([0, motif[1]])
-                    peptide.sumOfLiNsForAllCleavageSites = 1
+            if motif[1] > 0:
+                if peptide.sequence[api] == motif[0]:
+                    if peptide.cleavageSites:
+                        peptide.cleavageSites[0] = [0, motif[1]]  # preferred / special AA found
+                        peptide.sumOfLiNsForAllCleavageSites = 1
+                    else:
+                        peptide.cleavageSites.append([0, motif[1]])
+                        peptide.sumOfLiNsForAllCleavageSites = 1
+                else:  # for negative LiNs no cleavage
+                    peptide.cleavageSites.remove([0, 0.3])
+                    peptide.sumOfLiNsForAllCleavageSites = 0
 
 
 def add_motif_tuples(motif_tuple1, motif_tuple2):
@@ -166,7 +171,9 @@ iPepMotifs = add_motif_tuples(add_motif_tuples((('F', 2), ('I', 2)), hydrophobic
 lPepMotifs = add_motif_tuples((('R', 2), ('L', 2), ('F', 2)), hydrophobicAminoAcidMotifs)
 flnMotifs = (('E', 2), ('M', 2), ('H', 2), ('S', 3), ('F', 2))
 dpapMotifs = (('R', -10), ('P', -10), ('K', -10))
+metApMotif = [('M', 1)]
 proApMotif = [('P', 1)]
+
 # TODO: deal with negative LiN values!!!
 plas1 = Peptidase('Plasmepsin I', False, (), 0, 0)  # special initiator role
 plas2 = Peptidase('Plasmepsin II', False, iPepMotifs, 80, 146)
@@ -176,12 +183,18 @@ hdp = Enzyme('Heme Detoxification Protein')
 lPep = Peptidase('HAP, Falcipain III', False, lPepMotifs, 20, 80)
 fln = Peptidase('Falcilysin', True, flnMotifs, 8, 25, 3, 8)
 dpap = Peptidase('Dipeptidyl aminopeptidase', True, dpapMotifs, 4, 8, 1, 1)
+leuAp = Peptidase('Leucyl aminopeptidase', True, (('R', -10), ('K', -10), ('L', 1)), 2, 4, amino_peptidase_index=0, cuts_everything=True)
+aspAp = Peptidase('Aspartyl aminopeptidase', True, (('D', 1), ('E', 0.3)), 2, 4, amino_peptidase_index=0)
+metAp = Peptidase('Methionyl aminopeptidase', True, tuple(metApMotif), 2, 4, amino_peptidase_index=0, cuts_everything=True)
 apAp = Peptidase('Aminoacyl prolin aminopeptidase', True, ('P', 1), 2, 4, amino_peptidase_index=1)
 alaAp = Peptidase('Alanyl aminopeptidase', True, (('A', 1), ('P', 0.1)), 2, 4, amino_peptidase_index=0, cuts_everything=True)
-
-proAp = Peptidase('Prolyl aminopeptidase', True, tuple(proApMotif), 4, 2, amino_peptidase_index=0)
-testSequence = ('A', 'X', 'X', 'A', 'L', 'X', 'X', 'X', 'X', 'A', 'T', 'L', 'F', 'L', 'L', 'X', 'X', 'A', 'T', 'L', 'F')
+proAp = Peptidase('Prolyl aminopeptidase', True, tuple(proApMotif), 2, 4, amino_peptidase_index=0)
+subtilisin = Peptidase('Subtilisin', True, (), 2, 4, cuts_everything=True)
+testSequence = ('R', 'X', 'X', 'A', 'L', 'X', 'X', 'X', 'X', 'A', 'T', 'L', 'F', 'L', 'L', 'X', 'X', 'A', 'T', 'L', 'F')
 pep = peptides.Peptide(testSequence, len(testSequence))
+leuAp.first_aa_cleavage(pep)
+print(pep.cleavageSites)
+print(pep.sumOfLiNsForAllCleavageSites)
 enzymes = []
 
 
