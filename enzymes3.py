@@ -121,8 +121,7 @@ class Peptidase(Enzyme):
         peptide.cleavageSites = []  # resetting attributes
         peptide.sumOfLiNsForAllCleavageSites = 0
 
-        if self.aminoPeptidaseIndex == -1 and self.cleavageMotifs:
-            # subtilisin has no cleavage motifs -> needs no api
+        if self.aminoPeptidaseIndex == -1:
                 sys.exit('No AminopeptidaseIndex given')
         else:
             api = self.aminoPeptidaseIndex  # index of amino acid to be checked for motif compatibility
@@ -204,28 +203,11 @@ metAp = Peptidase('Methionyl aminopeptidase', True, tuple(metApMotif), 2, 4, ami
 apAp = Peptidase('Aminoacyl prolin aminopeptidase', True, tuple(proApMotif), 2, 4, amino_peptidase_index=1)
 alaAp = Peptidase('Alanyl aminopeptidase', True, (('A', 1), ('P', 0.1)), 2, 4, amino_peptidase_index=0, cuts_everything=True)
 proAp = Peptidase('Prolyl aminopeptidase', True, tuple(proApMotif), 2, 4, amino_peptidase_index=0)
-subtilisin = Peptidase('Subtilisin', True, (), 2, 4, cuts_everything=True)
+subtilisin = Peptidase('Subtilisin', True, (), 2, 4, amino_peptidase_index=0, cuts_everything=True)
 
 testSequence = ('L', 'P', 'X', 'A', 'L', 'X', 'X', 'X', 'X', 'A', 'T', 'L', 'F', 'L', 'L', 'X', 'X', 'A', 'T', 'L', 'F')
 pep = peptides.Peptide(testSequence, len(testSequence), 0)
-apAp.first_aa_cleavage(pep)
-print(pep.cleavageSites)
-print(pep.sumOfLiNsForAllCleavageSites)
-enzymes = [plas2, plas4, lPep, fln, dpap, leuAp, aspAp, metAp, apAp, alaAp, proAp, subtilisin]
 
 
-def get_fragments(sequence, cut_index):
-    list_segment1 = []
-    list_segment2 = []
-    i = 0
-    while i <= cut_index:
-        list_segment1.append(sequence[i])
-        i += 1
-    while i != len(sequence):
-        list_segment2.append(sequence[i])
-        i += 1
-    return [tuple(list_segment1), tuple(list_segment2)]
-
-
-print(get_fragments(pep.sequence, pep.cleavageSites[0][0]))
+enzymes = [plas2, plas4, fal2, lPep, fln, dpap, leuAp, aspAp, metAp, apAp, alaAp, proAp, subtilisin]
 
