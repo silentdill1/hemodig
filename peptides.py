@@ -13,10 +13,29 @@ class Peptide:
         # has to be reset to 0 upon enzyme change
 
 
+class PeptideChange:
+    """ represents abundance change (dn/dt) for last time point of ode solver for given sequence to be saved in peptideChangesList
+        of currentPeptideFragments"""
+    def __init__(self, sequence, length, abundance_change, contains_fpp):
+        self.sequence = sequence
+        self.length = length
+        self.abundanceChange = abundance_change
+        self.containsFpp = contains_fpp
+
+
 class Peptides:
     def __init__(self, number_of_possible_chain_lengths):
-        self.peptides = []
+        self.peptidesList = []
+        self.numberOfPossibleChainLengths = number_of_possible_chain_lengths
         # list of lists containing currently existing peptides for chain length (index), 0 is not used
         # ascending
-        for i in range(0, number_of_possible_chain_lengths+1):
-            self.peptides.append([])
+        for i in range(0, self.numberOfPossibleChainLengths+1):
+            self.peptidesList.append([])
+        self.lastTimePoint = 0
+        self.peptideChangesList = []  # holds dn/dt for last timepoint
+        self.reset_peptide_changes_list()
+
+    def reset_peptide_changes_list(self):
+        self.peptideChangesList = []
+        for i in range(0, self.numberOfPossibleChainLengths+1):
+            self.peptidesList.append([])

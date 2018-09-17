@@ -1,13 +1,17 @@
 import numpy as np
 from datainterpretation2 import names, lengths
 from foodvacuole import get_volume, get_hb_abundance_change
-from peptides import Peptides, Peptide
+from peptides import Peptide, PeptideChange
 from enzymes3 import plas1, hdp, fal2, enzymes
 from dataimport import alphaHbChain, betaHbChain
-from copy import deepcopy
 
 
 def get_relative_enzyme_concentration_index(t):
+    """
+
+    :param t: timepoint
+    :return: nearest index in abundance list for timepoint
+    """
     if t % 2 <= 1:
         return int(t/2)-1  # index for protein abundance starts at 0 for 2hpi
     else:
@@ -15,6 +19,12 @@ def get_relative_enzyme_concentration_index(t):
 
 
 def get_absolute_concentration_of_possible_substrates(enzyme, concentrations):
+    """
+
+    :param enzyme: enzyme, used for to determine possible peptide lengths
+    :param concentrations: list of current concentrations (calculated based on abundances and food vacuole volume for timepoint)
+    :return: float, sum of concentrations of possible substrates in fmol
+    """
     acos = 0  # absolute concentration of substrates in M
     if enzyme.indices[0] != 'None':  # operates on species wFpp
         min_index = enzyme.indices[0][0]
@@ -30,6 +40,10 @@ def get_absolute_concentration_of_possible_substrates(enzyme, concentrations):
 
 
 def get_void_array():
+    """
+
+    :return: void list for ode solver (used for abundances and abundance changes
+    """
     void_array = []
     for i in range(0, len(names)):
         void_array.append(0)
@@ -56,18 +70,31 @@ def get_fragments(sequence, cut_index):
     return [tuple(list_segment1), tuple(list_segment2)]
 
 
-def check_peptide_existence(sequence, length, contains_fpp, new_peptide_fragments):
-    """ returns peptide index in currentPeptideFragments.peptides[lengthIndex] (lengthIndex = length-1)
+def get_peptide_index(peptide_change, length, peptides_list):
+    """ returns peptide index in current_peptide_fragments.peptides[length] (length of peptide in AAs)
         or -1 if not found"""
     index = -1
-    for peptideIndex in range(0, len(new_peptide_fragments.peptides[length-1])):
-        peptide = new_peptide_fragments.peptides[length-1][peptideIndex]
-        if peptide.sequence == sequence and peptide.containsFpp == contains_fpp:
+    for peptideIndex in range(0, len(peptides_list[length])):
+        peptide = peptides_list[length][peptideIndex]
+        if peptide.sequence == peptide_change.sequence and peptide.containsFpp == peptide_change.contains_fpp:
             index = peptideIndex
     return index
 
 
+def update_peptides_list(peptides_list, peptide_changes_list, time_step):
+    for length in range(1, len(peptides_list)):
+        for peptide_change in peptide_changes_list[length]:
+            index = get_peptide_index(peptide_change, length, peptides_list)
+            if index == -1:  # add new Peptide
+                newPeptideAbundance = peptide_change.abundanceChange * time_step
+                newPeptide = Peptide(PeptideChange.sequence, )
+
+
 def longer_fragment_tuple(length_of_fragment1, length_of_fragment2):
+    """
+    (True, False) if length_of_fragment1 > length_of_fragment2
+    etc.
+    """
     if length_of_fragment1 >= length_of_fragment2:
         answers = (True, False)
         return answers
@@ -76,15 +103,16 @@ def longer_fragment_tuple(length_of_fragment1, length_of_fragment2):
         return answers
 
 
-def add_peptide_fragments(peptide, number_of_peptides_for_length, total_abundance_change, new_peptide_fragments):
+def add_peptide_fragment_changes(peptide, number_of_peptides_for_length, total_abundance_change, peptide_abundance_changes_list):
     """
-
+    adds resulting peptide fragment changes (dn/dt) of each cleavage site for given peptide to peptide_abundance_changes_list
     :param peptide: peptide, peptide to be cleaved (cleavage sites have been set previously)
-    :param number_of_peptides_for_length: postive integer, number of different peptides for length
-    :param total_abundance_change: postive integer, change in abundance for all peptides of current length
+    :param number_of_peptides_for_length: positive integer, number of different peptides for length
+    :param total_abundance_change: positive integer, change in abundance for all peptides of current length
     :return: void, modifies currentPeptideFragments
     """
-    peptide.abundance -= total_abundance_change / number_of_peptides_for_length
+    substrate_peptide_abundance_change = PeptideChange(peptide.sequence, peptide.length, total_abundance_change / number_of_peptides_for_length, False)
+    peptide_abundance_changes_list[substrate_peptide_abundance_change.length].append(substrate_peptide_abundance_change)
     for cleavageSite in peptide.cleavageSites:
         LiN_for_current_cleavage_site = cleavageSite[1]
         segments = get_fragments(peptide.sequence, cleavageSite[0])
@@ -97,25 +125,26 @@ def add_peptide_fragments(peptide, number_of_peptides_for_length, total_abundanc
         else:
             fpp_distribution = (False, False)
 
-        fragment1_index_in_peptides_of_length = check_peptide_existence(segments[0], length_of_fragment1, new_peptide_fragments)
-        if fragment1_index_in_peptides_of_length == -1:  # create new peptide
-            fragment1 = Peptide(segments[0], length_of_fragment1, abundance_change_of_fragments, fpp_distribution[0])
-            new_peptide_fragments.peptides[length_of_fragment1].append(fragment1)
-        else:  # add abundance change to old peptide
-            new_peptide_fragments.peptides[length_of_fragment1][fragment1_index_in_peptides_of_length].abundance += abundance_change_of_fragments
+        fragment1_change = PeptideChange(segments[0], length_of_fragment1, abundance_change_of_fragments, fpp_distribution[0])
+        peptide_abundance_changes_list[length_of_fragment1].append(fragment1_change)
 
-        fragment2_index_in_peptides_of_length = check_peptide_existence(segments[1], length_of_fragment2, new_peptide_fragments)
-        if fragment2_index_in_peptides_of_length == -1:
-            fragment2 = Peptide(segments[1], length_of_fragment2, abundance_change_of_fragments, fpp_distribution[1])
-            new_peptide_fragments.peptides[length_of_fragment1].append(fragment2)
-        else:
-            new_peptide_fragments.peptides[length_of_fragment2][fragment2_index_in_peptides_of_length].abundance += abundance_change_of_fragments
+        fragment2_change = PeptideChange(segments[1], length_of_fragment2, abundance_change_of_fragments, fpp_distribution[1])
+        peptide_abundance_changes_list.peptides[length_of_fragment1].append(fragment2_change)
 
 
 def derivative(abundances, t, current_peptide_fragments):
+    """
+    derivative function for ode solver
+    """
+# update of current_peptide_fragments.peptides_list
+    if t != 0:
+        time_step = t - current_peptide_fragments.lastTimePoint
+        update_peptides_list(current_peptide_fragments.peptidesList, current_peptide_fragments.peptideChangesList, time_step)
+    
     concentrations = []
     abundance_changes = get_void_array()
-    new_peptide_fragments = deepcopy(current_peptide_fragments)
+    current_peptide_fragments.reset_peptide_changes_list()
+    peptide_abundance_changes_list = current_peptide_fragments.peptideChangesList  # holds abundance changes for given timestep
     food_vacuole_volume = get_volume(t)
     for abundance in abundances:
         concentrations.append(abundance/food_vacuole_volume)
@@ -131,19 +160,11 @@ def derivative(abundances, t, current_peptide_fragments):
     abundance_changes[names['33']] = 2 * plas1.kCatKm * plas1.abundance[eci] * concentrations[0] * food_vacuole_volume
     segments = get_fragments(alphaHbChain, 32)
 
-    index1 = check_peptide_existence(segments[0], 33, False, new_peptide_fragments)
-    if index1 == -1:
-        peptide33 = Peptide(segments[0], 33, abundance_changes[names['33']], False)
-        new_peptide_fragments.peptides[33].append(peptide33)
-    else:
-        new_peptide_fragments.peptides[33][index1].abundance += abundance_changes[names['33']]
+    peptide33_change = PeptideChange(segments[0], 33, abundance_changes[names['33']], False)
+    peptide_abundance_changes_list[33].append(peptide33_change)
 
-    index2 = check_peptide_existence(segments[1], 108, True, new_peptide_fragments)
-    if index2 == -1:
-        peptide108 = Peptide(segments[0], 108, abundance_changes[names['108']], True)
-        new_peptide_fragments.peptides[108].append(peptide108)
-    else:
-        new_peptide_fragments.peptides[108][index2].abundance += abundance_changes[names['108']]
+    peptide108 = PeptideChange(segments[0], 108, abundance_changes[names['108']], True)
+    peptide_abundance_changes_list.peptides[108].append(peptide108)
 
 # heme detoxification protein equations
     abundance_changes[names['Fpp']] += -hdp.kCatKm * concentrations[1] * food_vacuole_volume
@@ -166,20 +187,21 @@ def derivative(abundances, t, current_peptide_fragments):
             if concentrations[i] != 0:  # check if substrate has concentration
                 p = concentrations[i] / absolute_concentration_of_possible_substrates  # likelihood of substrate being used
                 conversion = p * max_enzyme_abundance * relative_enzyme_abundance * k_cat_k_m * concentrations[i]
-                abundance_changes[i] += -conversion
+                abundance_changes[i] -= conversion
                 # decay of substrate
                 increase_of_products = conversion
                 peptides_for_length = current_peptide_fragments.peptides[lengths[str(i)]]  # takes peptides from CURRENT state
                 number_of_peptides_for_length = len(peptides_for_length)
                 for peptide in peptides_for_length:
                     if enzyme is fal2:  # fal2 removes fpp
-                        peptide.containsFpp = False
-                        abundance_changes[names['Fpp']] += increase_of_products / number_of_peptides_for_length
+                        if peptide.containsFpp:
+                            peptide.containsFpp = False
+                            abundance_changes[names['Fpp']] += increase_of_products / number_of_peptides_for_length
                     if enzyme.isExopeptidase and enzyme.aminoPeptidaseIndex != -1:
                         enzyme.first_aa_cleavage(peptide)
-                        add_peptide_fragments(peptide, number_of_peptides_for_length, increase_of_products, new_peptide_fragments)
-                        #  changes peptides in NEW state
+                        add_peptide_fragment_changes(peptide, number_of_peptides_for_length, increase_of_products, peptide_abundance_changes_list)
                     else:
                         enzyme.configure_cleavage_sites(peptide)
-        current_peptide_fragments = new_peptide_fragments  # actualization
+                        add_peptide_fragment_changes(peptide, number_of_peptides_for_length, increase_of_products, peptide_abundance_changes_list)
+        current_peptide_fragments.lastTimePoint = t
         return abundance_changes
