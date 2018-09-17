@@ -135,7 +135,6 @@ def derivative(abundances, t, current_peptide_fragments):
     """
     derivative function for ode solver
     """
-
 # update of current_peptide_fragments.peptides_list
     if t != 2:
         time_step = t - current_peptide_fragments.lastTimePoint
@@ -173,6 +172,7 @@ def derivative(abundances, t, current_peptide_fragments):
 
 # other enzymes
     for enzyme in enzymes:
+        print(enzyme.name)
         absolute_concentration_of_possible_substrates = get_absolute_concentration_of_possible_substrates(enzyme, concentrations)
         start_index = names[str(enzyme.minLength)]
         end_index = names[str(enzyme.maxLength)]
@@ -198,10 +198,12 @@ def derivative(abundances, t, current_peptide_fragments):
                             abundance_changes[names['Fpp']] += increase_of_products / number_of_peptides_for_length
                     if enzyme.isExopeptidase and enzyme.aminoPeptidaseIndex != -1:
                         enzyme.first_aa_cleavage(peptide)
+                        print(peptide.cleavageSites)
                         add_peptide_fragment_changes(peptide, number_of_peptides_for_length, increase_of_products,
                                                      peptide_abundance_changes_list, abundance_changes)
                     else:
                         enzyme.configure_cleavage_sites(peptide)
+                        print(peptide.cleavageSites)
                         add_peptide_fragment_changes(peptide, number_of_peptides_for_length, increase_of_products,
                                                      peptide_abundance_changes_list, abundance_changes)
 
