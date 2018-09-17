@@ -54,7 +54,7 @@ def initialize_parameters(enzyme):
         enzyme.maxAbundance = initialization_parameters[2]
         if enzyme.pfidOld:
             enzyme.line = det_data_frame_line(dfProt, enzyme)
-            get_abundance(dfProt, enzyme)
+            enzyme.abundance = get_abundance(dfProt, enzyme)
 
 
 AAThreeLetterCode = {'ALA': 'A', 'ARG': 'R', 'ASN': 'N', 'ASP': 'D', 'CYS': 'C', 'GLU': 'E', 'GLN': 'Q', 'GLY': 'G', 'HIS': 'H',

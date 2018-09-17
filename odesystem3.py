@@ -26,16 +26,10 @@ def get_absolute_concentration_of_possible_substrates(enzyme, concentrations):
     :return: float, sum of concentrations of possible substrates in fmol
     """
     acos = 0  # absolute concentration of substrates in M
-    if enzyme.indices[0] != 'None':  # operates on species wFpp
-        min_index = enzyme.indices[0][0]
-        max_index = enzyme.indices[0][1]
-        for i in range(min_index, max_index+1):
-            acos += concentrations[i]
-    if enzyme.indices[1] != 'None':  # operates on species woFpp
-        min_index = enzyme.indices[1][0]
-        max_index = enzyme.indices[1][1]
-        for i in range(min_index, max_index+1):
-            acos += concentrations[i]
+    min_index = names[str(enzyme.minLength)]
+    max_index = names[str(enzyme.maxLength)]
+    for i in range(min_index, max_index+1):
+        acos += concentrations[i]
     return acos
 
 
@@ -76,7 +70,7 @@ def get_peptide_index(peptide_change, length, peptides_list):
     index = -1
     for peptideIndex in range(0, len(peptides_list[length])):
         peptide = peptides_list[length][peptideIndex]
-        if peptide.sequence == peptide_change.sequence and peptide.containsFpp == peptide_change.contains_fpp:
+        if peptide.sequence == peptide_change.sequence and peptide.containsFpp == peptide_change.containsFpp:
             index = peptideIndex
     return index
 
@@ -84,10 +78,13 @@ def get_peptide_index(peptide_change, length, peptides_list):
 def update_peptides_list(peptides_list, peptide_changes_list, time_step):
     for length in range(1, len(peptides_list)):
         for peptide_change in peptide_changes_list[length]:
-            index = get_peptide_index(peptide_change, length, peptides_list)
-            if index == -1:  # add new Peptide
-                newPeptideAbundance = peptide_change.abundanceChange * time_step
-                newPeptide = Peptide(PeptideChange.sequence, )
+            peptide_index = get_peptide_index(peptide_change, length, peptides_list)
+            if peptide_index == -1:  # add new Peptide
+                new_peptide_abundance = peptide_change.abundanceChange * time_step
+                new_peptide = Peptide(peptide_change.sequence, peptide_change.length, new_peptide_abundance, peptide_change.containsFpp)
+                peptides_list[length].append(new_peptide)
+            else:
+                peptides_list[length][peptide_index].abundance += peptide_change.abundanceChange * time_step
 
 
 def longer_fragment_tuple(length_of_fragment1, length_of_fragment2):
@@ -129,7 +126,7 @@ def add_peptide_fragment_changes(peptide, number_of_peptides_for_length, total_a
         peptide_abundance_changes_list[length_of_fragment1].append(fragment1_change)
 
         fragment2_change = PeptideChange(segments[1], length_of_fragment2, abundance_change_of_fragments, fpp_distribution[1])
-        peptide_abundance_changes_list.peptides[length_of_fragment1].append(fragment2_change)
+        peptide_abundance_changes_list[length_of_fragment1].append(fragment2_change)
 
 
 def derivative(abundances, t, current_peptide_fragments):
@@ -163,8 +160,8 @@ def derivative(abundances, t, current_peptide_fragments):
     peptide33_change = PeptideChange(segments[0], 33, abundance_changes[names['33']], False)
     peptide_abundance_changes_list[33].append(peptide33_change)
 
-    peptide108 = PeptideChange(segments[0], 108, abundance_changes[names['108']], True)
-    peptide_abundance_changes_list.peptides[108].append(peptide108)
+    peptide108 = PeptideChange(segments[1], 108, abundance_changes[names['108']], True)
+    peptide_abundance_changes_list[108].append(peptide108)
 
 # heme detoxification protein equations
     abundance_changes[names['Fpp']] += -hdp.kCatKm * concentrations[1] * food_vacuole_volume
@@ -190,7 +187,7 @@ def derivative(abundances, t, current_peptide_fragments):
                 abundance_changes[i] -= conversion
                 # decay of substrate
                 increase_of_products = conversion
-                peptides_for_length = current_peptide_fragments.peptides[lengths[str(i)]]  # takes peptides from CURRENT state
+                peptides_for_length = current_peptide_fragments.peptidesList[lengths[str(i)]]  # takes peptides from CURRENT state
                 number_of_peptides_for_length = len(peptides_for_length)
                 for peptide in peptides_for_length:
                     if enzyme is fal2:  # fal2 removes fpp

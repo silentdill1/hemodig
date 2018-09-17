@@ -55,7 +55,6 @@ class Peptidase(Enzyme):
         else:
             for i in range(0, peptide.length):
                 available_amino_acid_indices.append(i)
-
         found_cleavage_site = False
         # is used only for falcilysin and dpap exonucleases,
         # because their cleavage likelihood depends on amino acids in vicinity,
@@ -78,7 +77,6 @@ class Peptidase(Enzyme):
                 amino_acid_index = available_amino_acid_indices[index_of_amino_acid_index]
                 amino_acid = peptide.sequence[amino_acid_index]
                 if amino_acid_index != (peptide.length-1) and amino_acid == motif[0]:  # no cleavage after last AA
-                    print(amino_acid)
                     cleavage_site_index = len(peptide.cleavageSites)
                     # save index in cleavage site array for future addition of LiNs for AAs in vicinity
                     peptide.cleavageSites.append([amino_acid_index, motif[1]])  # create new cleavage site
@@ -190,8 +188,8 @@ metApMotif = [('M', 1)]
 proApMotif = [('P', 1)]
 
 plas1 = Peptidase('Plasmepsin I', False, (), 0, 0)  # special initiator role
-plas2 = Peptidase('Plasmepsin II', False, iPepMotifs, 80, 146)
-plas4 = Peptidase('Plasmepsin IV', False, iPepMotifs, 80, 146)
+plas2 = Peptidase('Plasmepsin II', False, iPepMotifs, 80, 108)
+plas4 = Peptidase('Plasmepsin IV', False, iPepMotifs, 80, 108)
 fal2 = Peptidase('Falcipain II', False, lPepMotifs, 20, 80)
 hdp = Enzyme('Heme Detoxification Protein')
 lPep = Peptidase('HAP, Falcipain III', False, lPepMotifs, 20, 80)
@@ -210,5 +208,3 @@ pep = peptides.Peptide(testSequence, len(testSequence), 0, False)
 
 
 enzymes = [plas2, plas4, fal2, lPep, fln, dpap, leuAp, aspAp, metAp, apAp, alaAp, proAp, subtilisin]
-
-print(plas1.abundance)

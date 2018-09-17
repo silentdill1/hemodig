@@ -38,4 +38,4 @@ class Peptides:
     def reset_peptide_changes_list(self):
         self.peptideChangesList = []
         for i in range(0, self.numberOfPossibleChainLengths+1):
-            self.peptidesList.append([])
+            self.peptideChangesList.append([])
