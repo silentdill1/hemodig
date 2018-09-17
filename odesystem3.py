@@ -36,7 +36,7 @@ def get_absolute_concentration_of_possible_substrates(enzyme, concentrations):
 def get_void_array():
     """
 
-    :return: void list for ode solver (used for abundances and abundance changes
+    :return: void list for ode solver (used for abundances and abundance changes)
     """
     void_array = []
     for i in range(0, len(names)):
@@ -100,7 +100,7 @@ def longer_fragment_tuple(length_of_fragment1, length_of_fragment2):
         return answers
 
 
-def add_peptide_fragment_changes(peptide, number_of_peptides_for_length, total_abundance_change, peptide_abundance_changes_list):
+def add_peptide_fragment_changes(peptide, number_of_peptides_for_length, total_abundance_change, peptide_abundance_changes_list, abundance_changes):
     """
     adds resulting peptide fragment changes (dn/dt) of each cleavage site for given peptide to peptide_abundance_changes_list
     :param peptide: peptide, peptide to be cleaved (cleavage sites have been set previously)
@@ -124,20 +124,22 @@ def add_peptide_fragment_changes(peptide, number_of_peptides_for_length, total_a
 
         fragment1_change = PeptideChange(segments[0], length_of_fragment1, abundance_change_of_fragments, fpp_distribution[0])
         peptide_abundance_changes_list[length_of_fragment1].append(fragment1_change)
+        abundance_changes[length_of_fragment1] += abundance_change_of_fragments
 
         fragment2_change = PeptideChange(segments[1], length_of_fragment2, abundance_change_of_fragments, fpp_distribution[1])
-        peptide_abundance_changes_list[length_of_fragment1].append(fragment2_change)
+        peptide_abundance_changes_list[length_of_fragment2].append(fragment2_change)
+        abundance_changes[length_of_fragment2] += abundance_change_of_fragments
 
 
 def derivative(abundances, t, current_peptide_fragments):
     """
     derivative function for ode solver
     """
+
 # update of current_peptide_fragments.peptides_list
-    if t != 0:
+    if t != 2:
         time_step = t - current_peptide_fragments.lastTimePoint
         update_peptides_list(current_peptide_fragments.peptidesList, current_peptide_fragments.peptideChangesList, time_step)
-    
     concentrations = []
     abundance_changes = get_void_array()
     current_peptide_fragments.reset_peptide_changes_list()
@@ -153,15 +155,15 @@ def derivative(abundances, t, current_peptide_fragments):
 # plasmepsin equations
     abundance_changes[names['Hb']] += -plas1.kCatKm * plas1.abundance[eci] * concentrations[0] * food_vacuole_volume
     # TODO: integrate hb beta chain
-    abundance_changes[names['108']] = 2 * plas1.kCatKm * plas1.abundance[eci] * concentrations[0] * food_vacuole_volume
+    # abundance_changes[names['108']] = 2 * plas1.kCatKm * plas1.abundance[eci] * concentrations[0] * food_vacuole_volume
     abundance_changes[names['33']] = 2 * plas1.kCatKm * plas1.abundance[eci] * concentrations[0] * food_vacuole_volume
     segments = get_fragments(alphaHbChain, 32)
 
     peptide33_change = PeptideChange(segments[0], 33, abundance_changes[names['33']], False)
     peptide_abundance_changes_list[33].append(peptide33_change)
 
-    peptide108 = PeptideChange(segments[1], 108, abundance_changes[names['108']], True)
-    peptide_abundance_changes_list[108].append(peptide108)
+    # peptide108 = PeptideChange(segments[1], 108, abundance_changes[names['108']], True)
+    # peptide_abundance_changes_list[108].append(peptide108)
 
 # heme detoxification protein equations
     abundance_changes[names['Fpp']] += -hdp.kCatKm * concentrations[1] * food_vacuole_volume
@@ -196,9 +198,12 @@ def derivative(abundances, t, current_peptide_fragments):
                             abundance_changes[names['Fpp']] += increase_of_products / number_of_peptides_for_length
                     if enzyme.isExopeptidase and enzyme.aminoPeptidaseIndex != -1:
                         enzyme.first_aa_cleavage(peptide)
-                        add_peptide_fragment_changes(peptide, number_of_peptides_for_length, increase_of_products, peptide_abundance_changes_list)
+                        add_peptide_fragment_changes(peptide, number_of_peptides_for_length, increase_of_products,
+                                                     peptide_abundance_changes_list, abundance_changes)
                     else:
                         enzyme.configure_cleavage_sites(peptide)
-                        add_peptide_fragment_changes(peptide, number_of_peptides_for_length, increase_of_products, peptide_abundance_changes_list)
-        current_peptide_fragments.lastTimePoint = t
-        return abundance_changes
+                        add_peptide_fragment_changes(peptide, number_of_peptides_for_length, increase_of_products,
+                                                     peptide_abundance_changes_list, abundance_changes)
+
+    current_peptide_fragments.lastTimePoint = t
+    return abundance_changes

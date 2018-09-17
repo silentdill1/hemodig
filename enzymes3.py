@@ -72,7 +72,6 @@ class Peptidase(Enzyme):
             motif_index = available_motif_indices[index_of_motif_index]
             motif = self.cleavageMotifs[motif_index]  # motif = tuple of AA Code and LiN, e.g. ('X', 4)
             index_of_amino_acid_index = 0
-
             while index_of_amino_acid_index < len(available_amino_acid_indices) and not found_cleavage_site:
                 amino_acid_index = available_amino_acid_indices[index_of_amino_acid_index]
                 amino_acid = peptide.sequence[amino_acid_index]
@@ -193,7 +192,7 @@ plas4 = Peptidase('Plasmepsin IV', False, iPepMotifs, 80, 108)
 fal2 = Peptidase('Falcipain II', False, lPepMotifs, 20, 80)
 hdp = Enzyme('Heme Detoxification Protein')
 lPep = Peptidase('HAP, Falcipain III', False, lPepMotifs, 20, 80)
-fln = Peptidase('Falcilysin', True, flnMotifs, 8, 25, 3, 8)
+fln = Peptidase('Falcilysin', True, flnMotifs, 8, 25, 3, 7)
 dpap = Peptidase('Dipeptidyl aminopeptidase', True, dpapMotifs, 4, 8, 1, 1)
 leuAp = Peptidase('Leucyl aminopeptidase', True, (('R', -10), ('K', -10), ('L', 1)), 2, 4, amino_peptidase_index=0, cuts_everything=True)
 aspAp = Peptidase('Aspartyl aminopeptidase', True, (('D', 1), ('E', 0.3)), 2, 4, amino_peptidase_index=0)

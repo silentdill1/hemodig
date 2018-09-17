@@ -1,3 +1,5 @@
+
+
 class Peptide:
     def __init__(self, sequence, length, abundance, contains_fpp):
         self.sequence = sequence  # tuple of amino acids one letter code

@@ -84,4 +84,3 @@ betaHbChain = convert_sequence(import_aa_list(dfHbChains, 'beta Hb chain', 146))
 
 
 
-
