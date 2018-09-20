@@ -1,7 +1,7 @@
 import numpy as np
 from datainterpretation2 import names, lengths
 from foodvacuole import get_volume, get_hb_abundance_change
-from peptides import Peptide, PeptideChange
+from peptides import Peptide, PeptideChange, Peptides
 from enzymes3 import plas1, hdp, fal2, enzymes
 from dataimport import alphaHbChain, betaHbChain
 
@@ -131,7 +131,7 @@ def add_peptide_fragment_changes(peptide, number_of_peptides_for_length, total_a
         abundance_changes[length_of_fragment2] += abundance_change_of_fragments
 
 
-def derivative(abundances, t, current_peptide_fragments):
+def derivative(abundances, t, current_peptide_fragments, time_grid):
     """
     derivative function for ode solver
     """
@@ -209,3 +209,10 @@ def derivative(abundances, t, current_peptide_fragments):
 
     current_peptide_fragments.lastTimePoint = t
     return abundance_changes
+
+
+currentPeptideFragments = Peptides(108)
+
+
+def wrapper(t, y):
+    derivative(y, t, currentPeptideFragments, timeGrid)

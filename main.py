@@ -1,14 +1,13 @@
 import matplotlib.pyplot as plt
-from scipy.integrate import odeint
+from scipy.integrate import solve_ivp  # operates on changed version that passes ode solver timesteps to function
 import odesystem3
 # import odesystem2
 from expdataimport import expValues
 from datainterpretation2 import names
-from peptides import Peptides
-import pandas as pd
 
-currentPeptideFragments = Peptides(108)
-n = odeint(odesystem3.derivative, odesystem3.initialAbundances, odesystem3.timeGrid, args=(currentPeptideFragments,))
+
+n = solve_ivp(odesystem3.wrapper, [2, 50], odesystem3.initialAbundances, t_eval=odesystem3.timeGrid)
+
 
 hbAbundance = []
 hzAbundance = []
