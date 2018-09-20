@@ -4,10 +4,12 @@ import odesystem3
 # import odesystem2
 from expdataimport import expValues
 from datainterpretation2 import names
+import pickle
 
 
-n = solve_ivp(odesystem3.wrapper, [2, 50], odesystem3.initialAbundances, t_eval=odesystem3.timeGrid)
-
+solution = solve_ivp(odesystem3.wrapper, [2, 50], odesystem3.initialAbundances, t_eval=odesystem3.timeGrid)
+with open('data.pickle', 'wb') as f:
+    pickle.dump(solution, f)
 
 hbAbundance = []
 hzAbundance = []
@@ -17,14 +19,12 @@ spAbundance = []
 dpAbundance = []
 asAbundance = []
 
-for values in n:
-    asAbundance.append(values[names['1']])
 
 Abundances = [hbAbundance, hzAbundance, asAbundance]
 AbundanceNames = ['hb', 'hz', 'AAs']
 fig = plt.figure()
 plot = fig.add_subplot(111)
-plot.plot(odesystem3.timeGrid, asAbundance)
+plot.plot(odesystem3.timeGrid, solution.y[names['1']], label='AAs')
 '''
 for i in range(0, len(Abundances)):
     plot.plot(odesystem3.timeGrid, Abundances[i], label=AbundanceNames[i])
