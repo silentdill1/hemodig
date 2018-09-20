@@ -7,7 +7,7 @@ from datainterpretation2 import names
 import pickle
 
 
-solution = solve_ivp(odesystem3.wrapper, [2, 50], odesystem3.initialAbundances, t_eval=odesystem3.timeGrid)
+solution = solve_ivp(odesystem3.wrapper, [12, 30], odesystem3.initialAbundances, t_eval=odesystem3.timeGrid)
 with open('data.pickle', 'wb') as f:
     pickle.dump(solution, f)
 
