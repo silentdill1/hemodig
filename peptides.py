@@ -33,7 +33,6 @@ class Peptides:
         # ascending
         for i in range(0, self.numberOfPossibleChainLengths+1):
             self.peptidesList.append([])
-        self.numberOfTimePoints = 0
         self.peptideChangesList = []  # holds dn/dt for last timepoint
         self.reset_peptide_changes_list()
 

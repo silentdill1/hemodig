@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from scipy.integrate import solve_ivp  # operates on changed version that passes ode solver timesteps to function
+from changed_ivp import solve_ivp  # operates on changed version that passes ode solver timesteps to function
 import odesystem3
 from expdataimport import expValues
 from datainterpretation2 import names
