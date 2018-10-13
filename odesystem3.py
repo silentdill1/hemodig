@@ -1,10 +1,9 @@
-import numpy as np
+
 from datainterpretation2 import names, lengths
 from foodvacuole import get_volume, get_hb_abundance_change
 from peptides import Peptide, PeptideChange, Peptides
 from enzymes3 import plas1, hdp, fal2, enzymes
 from dataimport import alphaHbChain, betaHbChain
-from copy import deepcopy
 
 
 def get_relative_enzyme_concentration_index(t):
@@ -43,11 +42,12 @@ def get_void_array():
     return void_array
 
 
-timeGrid = np.linspace(12, 30, 101)
 initialAbundances = get_void_array()
 
 # [Hb, Fpp, Hz, 1, ... 108]
 # number = peptide length in AAs
+currentPeptideFragments = Peptides(108)
+counter = [0]
 
 
 def get_fragments(sequence, cut_index):
@@ -137,6 +137,7 @@ def derivative(abundances, t, current_peptide_fragments, fcounter):
     """
     derivative function for ode solver
     """
+
     # print('abundance: '+str(abundances[5]))
     if fcounter[0] == 100:
         print(t)
@@ -146,14 +147,17 @@ def derivative(abundances, t, current_peptide_fragments, fcounter):
             for peptide in peptides:
                 print(str(peptide.sequence)+str(peptide.abundance))
         '''
-
-    # update of current_peptide_fragments.peptides_list (happens only on preset time points specified in time grid)
-    time_step = t - current_peptide_fragments.lastTimePoint
-    if time_step > 0:
+    '''
+    # update of current_peptide_fragments.peptides_list (happens only when timepoint is added to time_points by solver)
+    number_of_time_points_of_solver = len(solver_time_points)
+    number_of_known_time_points = len(known_time_points)
+    if number_of_known_time_points != number_of_time_points_of_solver:
+        known_time_points = solver_time_points
+        time_step = known_time_points[number_of_time_points_of_solver-1] - known_time_points[number_of_time_points_of_solver-2]
         update_peptides_list(current_peptide_fragments.peptidesList, current_peptide_fragments.peptideChangesList, time_step)
         current_peptide_fragments.lastTimePoint = t
         current_peptide_fragments.reset_peptide_changes_list()
-
+    '''
     concentrations = []
     abundance_changes = get_void_array()
     peptide_abundance_changes_list = current_peptide_fragments.peptideChangesList  # holds abundance changes for given timestep
@@ -222,9 +226,11 @@ def derivative(abundances, t, current_peptide_fragments, fcounter):
     return abundance_changes
 
 
-currentPeptideFragments = Peptides(108)
-counter = [0]
-
-
-def wrapper(t, y):
+def derivative_for_ode_solver(t, y):
     return derivative(y, t, currentPeptideFragments, counter)
+
+
+def update_function_for_ode_solver(time_points):
+    number_of_time_points = len(time_points)
+    time_step = time_points[number_of_time_points-1] - time_points[number_of_time_points-2]
+    update_peptides_list(currentPeptideFragments.peptidesList, currentPeptideFragments.peptideChangesList, time_step)
