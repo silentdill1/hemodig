@@ -204,9 +204,9 @@ subtilisin = Peptidase('Subtilisin', True, (), 2, 4, amino_peptidase_index=0, cu
 
 testSequence = ('L', 'P', 'X', 'A', 'L', 'X', 'X', 'X', 'X', 'A', 'T', 'L', 'F', 'L', 'L', 'X', 'X', 'A', 'T', 'L', 'F')
 pep = peptides.Peptide(testSequence, len(testSequence), 0, False)
+enzymes = [plas2, plas4, fal2, lPep, fln, dpap, leuAp, aspAp, metAp, apAp, alaAp, proAp, subtilisin]
 
 '''
-enzymes = [plas2, plas4, fal2, lPep, fln, dpap, leuAp, aspAp, metAp, apAp, alaAp, proAp, subtilisin]
 fig = plt.figure()
 plot = fig.add_subplot(111)
 plot.plot(range(2, 50, 2), plas1.abundance, label='Plasmepsin I')
