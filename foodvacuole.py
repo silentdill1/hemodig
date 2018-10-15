@@ -1,7 +1,7 @@
 from math import exp
 from hostcell import get_hb_concentration
-import matplotlib.pyplot as plt
-import numpy as np
+# import matplotlib.pyplot as plt
+# import numpy as np
 
 INITIAL_VOLUME = 0.5  # in fL
 # TODO: concentrating factor bestimmen (Verhältnis Volumenzunahme Parasit / Vacuole)
@@ -32,8 +32,10 @@ for time in timeGrid:
     hbChange.append(get_hb_abundance_change(time))
 fig = plt.figure()
 plot = fig.add_subplot(111)
-plot.plot(timeGrid, hbChange)
-fig.savefig('bla.png')
-plt.interactive(False)
-plt.show()
+plot.plot(timeGrid, hbChange, label="Hb abundance change")
+plot.legend()
+plot.set_ylabel("dn/dt [fmol/h]")
+plot.set_xlabel("t [h]")
+fig.savefig('hb_change.png')
 '''
+

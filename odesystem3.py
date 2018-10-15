@@ -33,7 +33,6 @@ def get_absolute_concentration_of_possible_substrates(enzyme, concentrations):
 
 def get_void_array():
     """
-
     :return: void list for ode solver (used for abundances and abundance changes)
     """
     void_array = []
@@ -137,16 +136,13 @@ def derivative(abundances, t, current_peptide_fragments, fcounter):
     """
     derivative function for ode solver
     """
-
-    # print('abundance: '+str(abundances[5]))
+    print(t)
+    for peptides in current_peptide_fragments.peptidesList:
+        for peptide in peptides:
+            print(str(peptide.sequence) + str(peptide.abundance))
     if fcounter[0] == 100:
         print(t)
         fcounter[0] = 0
-        '''
-        for peptides in current_peptide_fragments.peptidesList:
-            for peptide in peptides:
-                print(str(peptide.sequence)+str(peptide.abundance))
-        '''
     '''
     # update of current_peptide_fragments.peptides_list (happens only when timepoint is added to time_points by solver)
     number_of_time_points_of_solver = len(solver_time_points)
@@ -199,6 +195,7 @@ def derivative(abundances, t, current_peptide_fragments, fcounter):
             relative_enzyme_abundance = 1
         for i in range(start_index, end_index + 1):  # i = index of substrate in ode solver array
             if concentrations[i] != 0:  # check if substrate has concentration
+                print(enzyme.name)
                 p = concentrations[i] / absolute_concentration_of_possible_substrates  # likelihood of substrate being used
                 # if i == 5:
                 #   print(p)
@@ -210,7 +207,7 @@ def derivative(abundances, t, current_peptide_fragments, fcounter):
                 number_of_peptides_for_length = len(peptides_for_length)
                 for peptide in peptides_for_length:
                     fpp_removed = False
-                    if enzyme is fal2:  # fal2 removes fpp
+                    if enzyme is fal2:  # falcipain 2 removes fpp
                         if peptide.containsFpp:
                             abundance_changes[names['Fpp']] += absolute_change_of_product_abundance / number_of_peptides_for_length
                             fpp_removed = True

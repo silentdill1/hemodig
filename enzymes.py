@@ -58,11 +58,5 @@ alap = Enzyme('Alanyl aminopeptidase', 'MAL13P1.56', 0.322, 8.815, 10 * 10**(-6)
 alap.line = dataimport.det_data_frame_line(dfProt, alap)
 alap.abundance = dataimport.get_abundance(dfProt, alap)
 
-fig = plt.figure()
-plot = fig.add_subplot(111)
-plot.plot(range(2, 50, 2), hap.abundance, label='hap')
-plot.plot(range(2, 50, 2), falcilysin.abundance, label='fln')
-plot.legend()
-plt.show()
 
 

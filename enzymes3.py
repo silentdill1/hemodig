@@ -2,7 +2,7 @@ import peptides
 import numpy as np
 import sys
 from dataimport import initialize_parameters
-
+# import matplotlib.pyplot as plt
 
 class Enzyme(object):
     def __init__(self, name):
@@ -205,5 +205,15 @@ subtilisin = Peptidase('Subtilisin', True, (), 2, 4, amino_peptidase_index=0, cu
 testSequence = ('L', 'P', 'X', 'A', 'L', 'X', 'X', 'X', 'X', 'A', 'T', 'L', 'F', 'L', 'L', 'X', 'X', 'A', 'T', 'L', 'F')
 pep = peptides.Peptide(testSequence, len(testSequence), 0, False)
 
-
+'''
 enzymes = [plas2, plas4, fal2, lPep, fln, dpap, leuAp, aspAp, metAp, apAp, alaAp, proAp, subtilisin]
+fig = plt.figure()
+plot = fig.add_subplot(111)
+plot.plot(range(2, 50, 2), plas1.abundance, label='Plasmepsin I')
+plot.plot(range(2, 50, 2), plas2.abundance, label='Plasmepsin II')
+plot.plot(range(2, 50, 2), plas4.abundance, label='Plasmepsin IV')
+plot.legend()
+plot.set_ylabel("n / n_max")
+plot.set_xlabel("t [h]")
+fig.savefig('initial_peptidases.png')
+'''
