@@ -35,6 +35,7 @@ class Peptides:
             self.peptidesList.append([])
         self.peptideChangesList = []  # holds dn/dt for last timepoint
         self.reset_peptide_changes_list()
+        self.lastTimePoint = 0  # time point of stage 1 of integration
 
     def reset_peptide_changes_list(self):
         self.peptideChangesList = []

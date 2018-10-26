@@ -1,17 +1,17 @@
 import matplotlib.pyplot as plt
-# from changed_ivp import solve_ivp  # operates on changed version that passes ode solver timesteps to function
-# import odesystem3
+from changed_ivp import solve_ivp  # operates on changed version that passes ode solver timesteps to function
+import odesystem3
 import odesystem2
 from scipy.integrate import odeint
 from expdataimport import expValues
-# from datainterpretation2 import names
-from datainterpretation import names
+from datainterpretation2 import names
+# from datainterpretation import names
 import pickle
 '''
 y = odeint(odesystem2.derivative, odesystem2.initialAbundances, odesystem2.timeGrid)
 with open('data_odesys2.pickle', 'wb') as f:
     pickle.dump(y, f)
-'''
+
 
 y = pickle.load(open('data_odesys2.pickle', 'rb'))
 # odesys2:
@@ -25,32 +25,40 @@ asAbundance = []
 print(names)
 for timepoint in y:
     hzAbundance.append(timepoint[names['Hz']])
-    asAbundance.append(timepoint[names['1']])
+    asAbundance.append(timepoint[names['1']]/7)
+    ipAbundance.append(0)
     for i in range(108, 148, 2):
-        ipAbundance.append(names[str(i)+'wFpp'])
+        ipAbundance[len(ipAbundance)-1]+=timepoint[names[str(i)+'wFpp']]
+    lpAbundance.append(0)
     for i in range(40, 108, 2):
-        lpAbundance.append(names[str(i)+'wFpp'])
+        lpAbundance[len(lpAbundance) - 1] += timepoint[names[str(i) + 'wFpp']]
     for i in range(40, 72, 2):
-        lpAbundance.append(names[str(i)])
+        lpAbundance[len(lpAbundance) - 1] += timepoint[names[str(i)]]
+    spAbundance.append(0)
+    for i in range(10, 40, 2):
+        spAbundance[len(spAbundance) - 1] += timepoint[names[str(i) + 'wFpp']]
+    for i in range(20, 40, 2):
+        spAbundance[len(spAbundance) - 1] += timepoint[names[str(i)]]
+    for i in range(3, 20, 2):
+        spAbundance[len(spAbundance) - 1] += timepoint[names[str(i)]]
     dpAbundance.append(timepoint[names['2']])
 
-Abundances = [ipAbundance, lpAbundance, dpAbundance]
-AbundanceNames = ['ip', 'lp', 'dp']
+Abundances = [ipAbundance, lpAbundance, spAbundance, dpAbundance]
+AbundanceNames = ['Lange Peptide', 'Peptide mittlerer Länge', 'Kurze Peptide', 'Dipeptide']
 
 fig = plt.figure()
 plot = fig.add_subplot(111)
-'''
 for i in range(0, len(Abundances)):
     plot.plot(odesystem2.timeGrid, Abundances[i], label=AbundanceNames[i])
-'''
 # plot.plot(odesystem2.timeGrid, hzAbundance, label='Theoretical Hz values')
 # plot.plot(expValues[0], expValues[1], '.', label="Experimental Hz values")
-plot.plot(odesystem2.timeGrid, asAbundance, label='Amino acid abundance')
+plot.plot(odesystem2.timeGrid, asAbundance, label='Aminosäuren (skaliert)')
+plot.plot(odesystem2.timeGrid, hzAbundance, label='Hemozoin')
 
 plot.set_ylabel("n [fmol]")
 plot.set_xlabel("t [h]")
 plot.legend(fontsize='small')
-fig.savefig('aa_prod.png')
+fig.savefig('mama.png')
 
 '''
 # odesys3:
@@ -73,4 +81,3 @@ plot.set_xlabel("t [h]")
 plot.legend(fontsize='small')
 plt.show()
 fig.savefig('plot_model3')
-'''

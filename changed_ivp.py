@@ -152,7 +152,7 @@ def find_active_events(g, g_new, direction):
     return np.nonzero(mask)[0]
 
 
-def solve_ivp(fun, t_span, y0, up_fun, method='RK45', t_eval=None, dense_output=False,
+def solve_ivp(fun, t_span, y0, up_fun, method='RK23', t_eval=None, dense_output=False,
               events=None, vectorized=False, **options):
     """Solve an initial value problem for a system of ODEs.
 

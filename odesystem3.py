@@ -45,8 +45,11 @@ initialAbundances = get_void_array()
 
 # [Hb, Fpp, Hz, 1, ... 108]
 # number = peptide length in AAs
-currentPeptideFragments = Peptides(108)
-counter = [0]
+currentPeptideFragmentsStages = []
+for i in range(4):
+    currentPeptideFragmentsStages.append(Peptides(108))
+runCounter = [0]
+stageCounter = [0]
 
 
 def get_fragments(sequence, cut_index):
@@ -132,17 +135,37 @@ def add_peptide_fragment_changes(peptide, number_of_peptides_for_length, total_a
         abundance_changes[names[str(length_of_fragment2)]] += abundance_change_of_fragments
 
 
-def derivative(abundances, t, current_peptide_fragments, fcounter):
+def derivative(abundances, t, current_peptide_fragments_stages, stage_counter, run_counter):
     """
     derivative function for ode solver
     """
+    '''
     print(t)
     for peptides in current_peptide_fragments.peptidesList:
         for peptide in peptides:
             print(str(peptide.sequence) + str(peptide.abundance))
-    if fcounter[0] == 100:
+    '''
+    if run_counter[0] == 100:
         print(t)
-        fcounter[0] = 0
+        run_counter[0] = 0
+    # setup for current stage
+    if stage_counter[0] == 0:
+        current_peptide_fragments = current_peptide_fragments_stages[0]
+        current_peptide_fragments.lastTimePoint = t
+    if stage_counter[0] == 1:
+        current_peptide_fragments = current_peptide_fragments_stages[1]
+        time_step = t - current_peptide_fragments.lastTimePoint
+        update_peptides_list(current_peptide_fragments.peptidesList, current_peptide_fragments.peptideChangesList, time_step)
+    if stage_counter[0] == 2:
+        current_peptide_fragments = current_peptide_fragments_stages[2]
+        time_step = t - current_peptide_fragments.lastTimePoint
+        update_peptides_list(current_peptide_fragments.peptidesList, current_peptide_fragments.peptideChangesList, time_step)
+    if stage_counter[0] == 3:
+        current_peptide_fragments = current_peptide_fragments_stages[3]
+        time_step = t - current_peptide_fragments.lastTimePoint
+        update_peptides_list(current_peptide_fragments.peptidesList, current_peptide_fragments.peptideChangesList, time_step)
+
+
     '''
     # update of current_peptide_fragments.peptides_list (happens only when timepoint is added to time_points by solver)
     number_of_time_points_of_solver = len(solver_time_points)
@@ -195,7 +218,6 @@ def derivative(abundances, t, current_peptide_fragments, fcounter):
             relative_enzyme_abundance = 1
         for i in range(start_index, end_index + 1):  # i = index of substrate in ode solver array
             if concentrations[i] != 0:  # check if substrate has concentration
-                print(enzyme.name)
                 p = concentrations[i] / absolute_concentration_of_possible_substrates  # likelihood of substrate being used
                 # if i == 5:
                 #   print(p)
@@ -219,15 +241,33 @@ def derivative(abundances, t, current_peptide_fragments, fcounter):
                         enzyme.configure_cleavage_sites(peptide)
                         add_peptide_fragment_changes(peptide, number_of_peptides_for_length, absolute_change_of_product_abundance,
                                                      peptide_abundance_changes_list, abundance_changes, fpp_removed)
-    fcounter[0] += 1
+    run_counter[0] += 1
+    # setup for next stage
+    if stage_counter[0] == 0:
+        current_peptide_fragments_stages[1] = current_peptide_fragments
+    if stage_counter[0] == 1:
+        current_peptide_fragments_stages[2] = current_peptide_fragments
+    if stage_counter[0] == 2:
+        current_peptide_fragments_stages[3] = current_peptide_fragments
+        stage_counter[0] = -1
+    stage_counter[0] += 1
     return abundance_changes
 
 
 def derivative_for_ode_solver(t, y):
-    return derivative(y, t, currentPeptideFragments, counter)
+    return derivative(y, t, currentPeptideFragmentsStages, stageCounter, runCounter)
 
 
 def update_function_for_ode_solver(time_points):
+    return update(time_points, currentPeptideFragmentsStages, stageCounter)
+
+
+def update(time_points, current_peptide_fragments_stages, stage_counter):
     number_of_time_points = len(time_points)
     time_step = time_points[number_of_time_points-1] - time_points[number_of_time_points-2]
-    update_peptides_list(currentPeptideFragments.peptidesList, currentPeptideFragments.peptideChangesList, time_step)
+    update_peptides_list(current_peptide_fragments_stages[0].peptidesList, current_peptide_fragments_stages[0].peptideChangesList, 2*time_step/9)
+    update_peptides_list(current_peptide_fragments_stages[0].peptidesList, current_peptide_fragments_stages[1].peptideChangesList, time_step/3)
+    update_peptides_list(current_peptide_fragments_stages[0].peptidesList, current_peptide_fragments_stages[2].peptideChangesList, 4*time_step/9)
+    current_peptide_fragments_stages[0].peptideChangesList = current_peptide_fragments_stages[3].peptideChangesList
+    current_peptide_fragments_stages[1] = currentPeptideFragmentsStages[0]
+    stage_counter[0] = 1
