@@ -61,23 +61,28 @@ plot.legend(fontsize='small')
 fig.savefig('mama.png')
 
 '''
-# odesys3:
-solution = solve_ivp(odesystem3.derivative_for_ode_solver, [12, 30], odesystem3.initialAbundances, odesystem3.update_function_for_ode_solver)
-with open('data.pickle', 'wb') as f:
-    pickle.dump(solution, f)
-    
-solution = pickle.load(open('data.pickle', 'rb'))
 
+# odesys3:
+solution = solve_ivp(odesystem3.derivative_for_ode_solver, [12, 20], odesystem3.initialAbundances, odesystem3.update_function_for_ode_solver)
+with open('data2.pickle', 'wb') as f:
+    pickle.dump(solution, f)
+concreteAAs = odesystem3.get_aas()
+with open('AAs.pickle', 'wb') as f:
+    pickle.dump(concreteAAs, f)
+'''
+solution = pickle.load(open('data.pickle', 'rb'))
 AbundanceNames = ['hb', 'hz', 'AAs']
 fig = plt.figure()
 plot = fig.add_subplot(111)
-# plot.plot(solution.t, solution.y[names['1']], label='AAs')
 plot.plot(solution.t, solution.y[names['Hb']], label='Hb')
 
+plot.plot(solution.t, solution.y[names['1']], label='AAs')
 
 plot.plot(expValues[0], expValues[1], label="exp hz values")
+
 plot.set_ylabel("n [fmol]")
 plot.set_xlabel("t [h]")
 plot.legend(fontsize='small')
 plt.show()
-fig.savefig('plot_model3')
+fig.savefig('plot_model3_hb')
+'''

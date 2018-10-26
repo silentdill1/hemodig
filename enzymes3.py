@@ -4,7 +4,9 @@ import sys
 from dataimport import initialize_parameters
 # import matplotlib.pyplot as plt
 
+
 class Enzyme(object):
+
     def __init__(self, name):
             self.name = name
             self.pfidOld = ''  # to be initialized by following method

@@ -1,5 +1,5 @@
 
-from datainterpretation2 import names, lengths
+from datainterpretation2 import names, lengths, AAAbundance
 from foodvacuole import get_volume, get_hb_abundance_change
 from peptides import Peptide, PeptideChange, Peptides
 from enzymes3 import plas1, hdp, fal2, enzymes
@@ -50,6 +50,7 @@ for i in range(4):
     currentPeptideFragmentsStages.append(Peptides(108))
 runCounter = [0]
 stageCounter = [0]
+lAAAbundance = AAAbundance
 
 
 def get_fragments(sequence, cut_index):
@@ -145,7 +146,7 @@ def derivative(abundances, t, current_peptide_fragments_stages, stage_counter, r
         for peptide in peptides:
             print(str(peptide.sequence) + str(peptide.abundance))
     '''
-    if run_counter[0] == 100:
+    if run_counter[0] == 10:
         print(t)
         run_counter[0] = 0
     # setup for current stage
@@ -195,7 +196,6 @@ def derivative(abundances, t, current_peptide_fragments_stages, stage_counter, r
     segments = get_fragments(alphaHbChain, 32)
     peptide33_change = PeptideChange(segments[0], 33, abundance_changes[names['33']], False)
     peptide_abundance_changes_list[33].append(peptide33_change)
-
     # peptide108 = PeptideChange(segments[1], 108, abundance_changes[names['108']], True)
     # peptide_abundance_changes_list[108].append(peptide108)
 
@@ -259,15 +259,26 @@ def derivative_for_ode_solver(t, y):
 
 
 def update_function_for_ode_solver(time_points):
-    return update(time_points, currentPeptideFragmentsStages, stageCounter)
+    return update(time_points, currentPeptideFragmentsStages, stageCounter, lAAAbundance)
 
 
-def update(time_points, current_peptide_fragments_stages, stage_counter):
+def update(time_points, current_peptide_fragments_stages, stage_counter, aa_abundance):
     number_of_time_points = len(time_points)
     time_step = time_points[number_of_time_points-1] - time_points[number_of_time_points-2]
     update_peptides_list(current_peptide_fragments_stages[0].peptidesList, current_peptide_fragments_stages[0].peptideChangesList, 2*time_step/9)
     update_peptides_list(current_peptide_fragments_stages[0].peptidesList, current_peptide_fragments_stages[1].peptideChangesList, time_step/3)
     update_peptides_list(current_peptide_fragments_stages[0].peptidesList, current_peptide_fragments_stages[2].peptideChangesList, 4*time_step/9)
     current_peptide_fragments_stages[0].peptideChangesList = current_peptide_fragments_stages[3].peptideChangesList
+    for peptide in current_peptide_fragments_stages[0].peptidesList[1]:
+        aa_abundance[peptide.sequence[0]].append(peptide.abundance)
     current_peptide_fragments_stages[1] = currentPeptideFragmentsStages[0]
     stage_counter[0] = 1
+
+
+def return_aas(aa_list):
+    return aa_list
+
+
+def get_aas():
+    return return_aas(lAAAbundance)
+

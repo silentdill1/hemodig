@@ -1,7 +1,8 @@
 from math import exp
 from hostcell import get_hb_concentration
-# import matplotlib.pyplot as plt
-# import numpy as np
+import matplotlib.pyplot as plt
+import numpy as np
+import scipy.integrate
 
 INITIAL_VOLUME = 0.5  # in fL
 # TODO: concentrating factor bestimmen (Verhältnis Volumenzunahme Parasit / Vacuole)
@@ -39,3 +40,16 @@ plot.set_xlabel("t [h]")
 fig.savefig('hb_change.png')
 '''
 
+
+def wrapper(t, y):
+    return get_hb_abundance_change(t)
+
+
+hbAbun = scipy.integrate.solve_ivp(wrapper, (2, 50), [0])
+fig = plt.figure()
+plot = fig.add_subplot(111)
+plot.plot(hbAbun.t, hbAbun.y.flat, label="Hb abundance change")
+plot.legend()
+plot.set_ylabel("dn/dt [fmol/h]")
+plot.set_xlabel("t [h]")
+fig.savefig('hb_abun_vacuole.png')
